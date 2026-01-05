@@ -12,19 +12,16 @@ export class PreloadScene extends Phaser.Scene {
       frameWidth: 100,
       frameHeight: 100,
     });
+
+    this.load.image('grass', '/assets/grass.png');
   }
 
   create(): void {
-    const cols = 9; // frames per row
-    const index = 1;
-    ///TODO: fix magic numbers
-    // also enhance to read from spritesheet metadata if possible
-
     this.anims.create({
       key: 'player-idle',
       frames: this.anims.generateFrameNumbers('player', {
-        start: 0 * cols,
-        end: 0 * cols + (cols - 3 - index), // last 3 frames are missing
+        start: 0,
+        end: 5,
       }),
       frameRate: 8,
       repeat: -1,
@@ -33,8 +30,8 @@ export class PreloadScene extends Phaser.Scene {
     this.anims.create({
       key: 'player-walk',
       frames: this.anims.generateFrameNumbers('player', {
-        start: 1 * cols,
-        end: cols + (cols - 1 - index), // last frame is missing
+        start: 9,
+        end: 16,
       }),
       frameRate: 10,
       repeat: -1,
@@ -44,7 +41,7 @@ export class PreloadScene extends Phaser.Scene {
       key: 'enemy-walk',
       frames: this.anims.generateFrameNumbers('enemy', {
         start: 8,
-        end: 8 * 2 - 1, // last 3 frames are missing
+        end: 15,
       }),
       frameRate: 8,
       repeat: -1,

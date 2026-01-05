@@ -1,6 +1,7 @@
 import { Enemy } from '@entities/enemy';
 import { Player } from '@entities/player';
 import { ENEMY_SPAWN_INTERVAL_MS, SPAWN_MARGIN } from '../constants';
+import { Landscape } from '@entities/landscape';
 
 type MovementKeys = {
   UP: Phaser.Input.Keyboard.Key;
@@ -13,6 +14,7 @@ export class GameScene extends Phaser.Scene {
   player!: Player;
   directions!: MovementKeys;
   enemies: Enemy[] = [];
+  landscape!: Landscape;
 
   constructor() {
     super({ key: 'GameScene' });
@@ -21,6 +23,15 @@ export class GameScene extends Phaser.Scene {
   create() {
     this.player = new Player(this, this.scale.width / 2, this.scale.height / 2);
     this.cameras.main.startFollow(this.player); // Camera follow moves the *view* (camera), not the world
+    // Helps avoid 1px seams with pixel-art tiles when camera scrolls at sub-pixel values.
+    this.cameras.main.roundPixels = true;
+    this.landscape = new Landscape(
+      this,
+      0,
+      0,
+      this.scale.width,
+      this.scale.height
+    );
 
     this.directions = this.input.keyboard!.addKeys({
       UP: Phaser.Input.Keyboard.KeyCodes.W,
@@ -99,5 +110,7 @@ export class GameScene extends Phaser.Scene {
     this.enemies.forEach((enemy) =>
       enemy.update(this.player.x, this.player.y, delta)
     );
+
+    this.landscape.update(this.cameras.main);
   }
 }
