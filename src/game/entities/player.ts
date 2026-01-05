@@ -20,7 +20,11 @@ export class Player extends Phaser.GameObjects.Sprite {
       this.play(desired);
     }
 
-    this.velocity.set(directions.x, directions.y).normalize();
+    if (isMoving) {
+      this.velocity.set(directions.x, directions.y).normalize();
+    } else {
+      this.velocity.set(0, 0);
+    }
     this.setFlipX(this.velocity.x < 0);
 
     const deltaSeconds = delta / 1000;
