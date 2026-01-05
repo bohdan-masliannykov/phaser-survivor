@@ -18,7 +18,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     // Chase behavior (no physics):
     // 1) direction = (target - me)
     // 2) normalize so diagonals aren't faster
-    // 3) move using speed * deltaSecondsas
+    // 3) move using speed * delta in seconds
     const dx = targetX - this.x;
     const dy = targetY - this.y;
 
