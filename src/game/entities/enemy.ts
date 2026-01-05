@@ -1,4 +1,9 @@
-import { ARRIVE_RADIUS, ENEMY_SPEED, SPRITE_SCALE } from '../constants';
+import {
+  ARRIVE_RADIUS,
+  ENEMY_SPEED,
+  MIN_VELOCITY_THRESHOLD,
+  SPRITE_SCALE,
+} from '../constants';
 
 export class Enemy extends Phaser.GameObjects.Sprite {
   velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
@@ -33,7 +38,7 @@ export class Enemy extends Phaser.GameObjects.Sprite {
     this.velocity.set(dx, dy).normalize();
 
     // Only flip when horizontal movement is meaningful.
-    if (Math.abs(this.velocity.x) > 0.001) {
+    if (Math.abs(this.velocity.x) > MIN_VELOCITY_THRESHOLD) {
       this.setFlipX(this.velocity.x < 0);
     }
 

@@ -9,11 +9,9 @@ export class Landscape extends Phaser.GameObjects.TileSprite {
     super(scene, x, y, width, height, 'grass');
     scene.add.existing(this);
 
-    this.setOrigin(0)
-      // Keep the background fixed to the camera (so it always covers the viewport).
-      // We'll manually scroll the tile texture using tilePositionX/Y.
-      .setScrollFactor(0)
-      .setDepth(-1);
+    // Keep the background fixed to the camera (so it always covers the viewport).
+    // We'll manually scroll the tile texture using tilePositionX/Y.
+    this.setOrigin(0).setScrollFactor(0).setDepth(-1);
   }
 
   update(camera: Phaser.Cameras.Scene2D.Camera): void {
