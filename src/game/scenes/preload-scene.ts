@@ -19,6 +19,7 @@ export class PreloadScene extends Phaser.Scene {
     const index = 1;
     ///TODO: fix magic numbers
     // also enhance to read from spritesheet metadata if possible
+
     this.anims.create({
       key: 'player-idle',
       frames: this.anims.generateFrameNumbers('player', {

@@ -1,5 +1,6 @@
 import { Enemy } from '@entities/enemy';
 import { Player } from '@entities/player';
+import { ENEMY_SPAWN_INTERVAL_MS, SPAWN_MARGIN } from '../constants';
 
 type MovementKeys = {
   UP: Phaser.Input.Keyboard.Key;
@@ -28,9 +29,8 @@ export class GameScene extends Phaser.Scene {
       RIGHT: Phaser.Input.Keyboard.KeyCodes.D,
     }) as MovementKeys;
 
-    // return;
     this.time.addEvent({
-      delay: 1000,
+      delay: ENEMY_SPAWN_INTERVAL_MS,
       loop: true,
       callback: () => {
         // IMPORTANT: when camera follows the player, screen coordinates (0..width/height)
@@ -44,7 +44,7 @@ export class GameScene extends Phaser.Scene {
         const bottom = view.y + view.height;
 
         // Spawn a bit outside the visible rectangle so enemies walk into view.
-        const margin = 40;
+        const margin = SPAWN_MARGIN;
         const side = Phaser.Math.Between(0, 3);
 
         let x: number;

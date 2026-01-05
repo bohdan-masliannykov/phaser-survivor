@@ -1,10 +1,12 @@
+import { PLAYER_SPEED, SPRITE_SCALE } from '../constants';
+
 export class Player extends Phaser.GameObjects.Sprite {
   velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
-  speed = 200; // pixels per second
+  speed = PLAYER_SPEED; // pixels per second
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'player', 0);
-    this.setScale(2.5);
+    this.setScale(SPRITE_SCALE);
     scene.add.existing(this);
 
     this.play('player-idle');

@@ -1,13 +1,15 @@
+import { ARRIVE_RADIUS, ENEMY_SPEED, SPRITE_SCALE } from '../constants';
+
 export class Enemy extends Phaser.GameObjects.Sprite {
   velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
-  speed: number = 100; // pixels per second
+  speed: number = ENEMY_SPEED; // pixels per second
 
   // When close enough to the target, stop moving to avoid overshoot/flip jitter.
-  private readonly arriveRadius = 6;
+  private readonly arriveRadius = ARRIVE_RADIUS;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'enemy', 0);
-    this.setScale(2.5);
+    this.setScale(SPRITE_SCALE);
     scene.add.existing(this);
 
     // Animation is created once in a Scene (PreloadScene) and shared globally.
