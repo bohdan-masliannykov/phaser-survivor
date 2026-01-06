@@ -1,10 +1,21 @@
 import { GameScene } from '@scenes/game-scene';
 import { PreloadScene } from '@scenes/preload-scene';
 
+export const MIN_WIDTH = 800;
+export const MIN_HEIGHT = 600;
+
 export const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 800,
+  width: Math.max(window.innerWidth, MIN_WIDTH),
+  height: Math.max(window.innerHeight, MIN_HEIGHT),
   scene: [PreloadScene, GameScene],
   pixelArt: true,
+  scale: {
+    mode: Phaser.Scale.RESIZE,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    min: {
+      width: MIN_WIDTH,
+      height: MIN_HEIGHT,
+    },
+  },
 };
