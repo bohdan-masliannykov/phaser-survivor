@@ -17,6 +17,12 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create(): void {
+    const g = this.make.graphics({ x: 0, y: 0 });
+    g.fillStyle(0xffff66, 1);
+    g.fillCircle(4, 4, 4);
+    g.generateTexture('projectile', 8, 8);
+    g.destroy();
+
     this.anims.create({
       key: 'player-idle',
       frames: this.anims.generateFrameNumbers('player', {
@@ -45,6 +51,16 @@ export class PreloadScene extends Phaser.Scene {
       }),
       frameRate: 8,
       repeat: -1,
+    });
+
+    this.anims.create({
+      key: 'enemy-death',
+      frames: this.anims.generateFrameNumbers('enemy', {
+        start: 40,
+        end: 44,
+      }),
+      frameRate: 8,
+      repeat: 0,
     });
 
     this.scene.start('GameScene');

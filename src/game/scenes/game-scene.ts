@@ -1,19 +1,22 @@
-import { Enemy } from '@entities/enemy';
-import { Player } from '@entities/player';
-import { ENEMY_SPAWN_INTERVAL_MS, SPAWN_MARGIN } from '../constants';
-import { Landscape } from '@entities/landscape';
-
-type MovementKeys = {
-  UP: Phaser.Input.Keyboard.Key;
-  DOWN: Phaser.Input.Keyboard.Key;
-  LEFT: Phaser.Input.Keyboard.Key;
-  RIGHT: Phaser.Input.Keyboard.Key;
-};
+import { Enemy } from '@entities/enemies/enemy';
+import { Player } from '@entities/player/player';
+import {
+  ENEMY_SPAWN_INTERVAL_MS,
+  FIRE_INTERVAL_MS,
+  PROJECTILE_HIT_RADIUS,
+  PROJECTILE_LIFETIME_MS,
+  PROJECTILE_SPEED,
+  SPAWN_MARGIN,
+} from '@constants';
+import { Landscape } from '@entities/environment/landscape';
+import { InputSystem } from '@system/input-system';
+import { Projectile } from '@entities/projectiles/projectile';
 
 export class GameScene extends Phaser.Scene {
+  inputSystem!: InputSystem;
   player!: Player;
-  directions!: MovementKeys;
   enemies: Enemy[] = [];
+  projectiles: Projectile[] = [];
   landscape!: Landscape;
 
   constructor() {
@@ -33,12 +36,14 @@ export class GameScene extends Phaser.Scene {
       this.scale.height
     );
 
-    this.directions = this.input.keyboard!.addKeys({
-      UP: Phaser.Input.Keyboard.KeyCodes.W,
-      DOWN: Phaser.Input.Keyboard.KeyCodes.S,
-      LEFT: Phaser.Input.Keyboard.KeyCodes.A,
-      RIGHT: Phaser.Input.Keyboard.KeyCodes.D,
-    }) as MovementKeys;
+    this.inputSystem = new InputSystem(this);
+
+    // Auto-fire: shoot toward the nearest enemy on an interval.
+    this.time.addEvent({
+      delay: FIRE_INTERVAL_MS,
+      loop: true,
+      callback: () => this.fireAtNearestEnemy(),
+    });
 
     this.time.addEvent({
       delay: ENEMY_SPAWN_INTERVAL_MS,
@@ -88,29 +93,86 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
-    const directions = { x: 0, y: 0 };
+    const move = this.inputSystem.getMoveIntent();
 
-    if (this.directions.UP.isDown) {
-      directions.y -= 1;
-    }
-
-    if (this.directions.DOWN.isDown) {
-      directions.y += 1;
-    }
-
-    if (this.directions.LEFT.isDown) {
-      directions.x -= 1;
-    }
-
-    if (this.directions.RIGHT.isDown) {
-      directions.x += 1;
-    }
-
-    this.player.update(directions, delta);
+    this.player.update(move, delta);
     this.enemies.forEach((enemy) =>
       enemy.update(this.player.x, this.player.y, delta)
     );
 
+    this.updateProjectiles(delta);
+
     this.landscape.update(this.cameras.main);
+  }
+
+  private fireAtNearestEnemy(): void {
+    if (this.enemies.length === 0) return;
+
+    const px = this.player.x;
+    const py = this.player.y;
+
+    let nearest: Enemy | undefined;
+    let bestD2 = Number.POSITIVE_INFINITY;
+
+    for (const enemy of this.enemies) {
+      const dx = enemy.x - px;
+      const dy = enemy.y - py;
+      const d2 = dx * dx + dy * dy;
+      if (d2 < bestD2) {
+        bestD2 = d2;
+        nearest = enemy;
+      }
+    }
+
+    if (!nearest) return;
+
+    const dx = nearest.x - px;
+    const dy = nearest.y - py;
+
+    const projectile = new Projectile(
+      this,
+      px,
+      py,
+      { x: dx, y: dy },
+      PROJECTILE_SPEED,
+      PROJECTILE_LIFETIME_MS
+    );
+    this.projectiles.push(projectile);
+  }
+
+  private updateProjectiles(delta: number): void {
+    const hitR2 = PROJECTILE_HIT_RADIUS * PROJECTILE_HIT_RADIUS;
+
+    // Iterate backwards so we can remove items safely.
+    for (let pIndex = this.projectiles.length - 1; pIndex >= 0; pIndex--) {
+      const p = this.projectiles[pIndex];
+      const alive = p.update(delta);
+
+      if (!alive) {
+        p.destroy();
+        this.projectiles.splice(pIndex, 1);
+        continue;
+      }
+
+      // Naive collision: bullet vs all enemies (fine for early prototype).
+      for (let eIndex = this.enemies.length - 1; eIndex >= 0; eIndex--) {
+        const e = this.enemies[eIndex];
+        const dx = e.x - p.x;
+        const dy = e.y - p.y;
+
+        if (dx * dx + dy * dy <= hitR2) {
+          // Prototype behavior: delete enemy on hit.
+          e.takeDamage(25);
+          if (e.isDead()) {
+            e.destroyWithAnimation('enemy-death', true);
+            this.enemies.splice(eIndex, 1);
+          }
+
+          p.destroy();
+          this.projectiles.splice(pIndex, 1);
+          break;
+        }
+      }
+    }
   }
 }

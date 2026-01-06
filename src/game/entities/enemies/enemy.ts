@@ -3,21 +3,20 @@ import {
   ENEMY_SPEED,
   MIN_VELOCITY_THRESHOLD,
   SPRITE_SCALE,
-} from '../constants';
+} from '@constants';
+import { GameObject } from '@entities/core/game-object';
 
-export class Enemy extends Phaser.GameObjects.Sprite {
-  velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
-  speed: number = ENEMY_SPEED; // pixels per second
-
+export class Enemy extends GameObject {
   // When close enough to the target, stop moving to avoid overshoot/flip jitter.
   private readonly arriveRadius = ARRIVE_RADIUS;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
-    super(scene, x, y, 'enemy', 0);
-    this.setScale(SPRITE_SCALE);
-    scene.add.existing(this);
-
-    // Animation is created once in a Scene (PreloadScene) and shared globally.
+    super(scene, x, y, 'enemy', ENEMY_SPEED, SPRITE_SCALE, {
+      maxHealth: 50,
+      barWidth: 24,
+      barHeight: 3,
+      barOffsetY: 18,
+    });
     this.play('enemy-walk');
   }
 
@@ -42,8 +41,6 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       this.setFlipX(this.velocity.x < 0);
     }
 
-    const deltaSeconds = delta / 1000;
-    this.x += this.velocity.x * deltaSeconds * this.speed;
-    this.y += this.velocity.y * deltaSeconds * this.speed;
+    super.move(delta);
   }
 }

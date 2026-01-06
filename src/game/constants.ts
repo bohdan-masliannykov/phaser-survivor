@@ -5,3 +5,8 @@ export const ARRIVE_RADIUS = 6; // pixels
 export const SPRITE_SCALE = 2.5; // scaling factor for sprites
 export const ENEMY_SPAWN_INTERVAL_MS = 1000; // milliseconds
 export const SPAWN_MARGIN = 40; // pixels outside of view
+
+export const FIRE_INTERVAL_MS = 500; // auto-shot cadence
+export const PROJECTILE_SPEED = 450; // pixels per second
+export const PROJECTILE_LIFETIME_MS = 900; // despawn after this time
+export const PROJECTILE_HIT_RADIUS = 18; // simple distance-based collision
