@@ -24,9 +24,5 @@ export abstract class Weapon {
   }
 
   abstract attack(target: Enemy, player: Player): void;
-  abstract updateAttack(
-    delta: number,
-    player: Player,
-    enemyManager: EnemyManager
-  ): void;
+  abstract updateAttack(player: Player, enemyManager: EnemyManager): void;
 }

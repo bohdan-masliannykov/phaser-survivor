@@ -16,14 +16,15 @@ export abstract class Player extends GameObject {
       maxHealth: 100,
       barWidth: 40,
       barHeight: 6,
-      barOffsetY: -38,
+      barOffsetY: 16,
       show: true,
     });
     this.animations = animations ?? this.animations;
     this.play(this.animations.idle);
+    this.setImmovable(true);
   }
 
-  update(directions: { x: number; y: number }, delta: number) {
+  update(directions: { x: number; y: number }) {
     const isMoving = directions.x !== 0 || directions.y !== 0;
     const desired = isMoving ? this.animations.walk : this.animations.idle;
 
@@ -31,17 +32,10 @@ export abstract class Player extends GameObject {
       this.play(desired);
     }
 
-    if (isMoving) {
-      this.velocity.set(directions.x, directions.y).normalize();
-    } else {
-      this.velocity.set(0, 0);
+    if (directions.x !== 0) {
+      this.setFacingDirection(directions.x < 0);
     }
-
-    if (this.velocity.x !== 0) {
-      this.setFacingDirection(this.velocity.x < 0);
-    }
-
-    super.move(delta);
+    super.move(directions);
   }
 
   abstract setFacingDirection(isLeft: boolean): void;

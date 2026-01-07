@@ -1,7 +1,14 @@
-import { PLAYER, SPRITE_SCALE } from '@constants';
+import { PLAYER } from '@constants';
 import { Player } from './player';
 import { FireWand } from '@entities/weapons/fire-wand';
+import type { HitboxConfig } from '@entities/core/game-object';
 
+const hitboxConfig: HitboxConfig = {
+  widthPercent: 0.14,
+  heightPercent: 0.2,
+  offsetXPercent: (1 - 0.14) / 2,
+  offsetYPercent: 0.38,
+};
 export class Wizzard extends Player {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, {
@@ -10,21 +17,12 @@ export class Wizzard extends Player {
       death: PLAYER.wizzard.animations.death.key,
     });
 
-    const body = this.body as Phaser.Physics.Arcade.Body;
-    body.setSize(6 * SPRITE_SCALE, 7.5 * SPRITE_SCALE);
-    body.setOffset(17.5 * SPRITE_SCALE, 15.5 * SPRITE_SCALE);
-
+    this.updateBodyForScale(false, hitboxConfig);
     this.weaponManager.addWeapon('fire-wand', new FireWand());
   }
 
   setFacingDirection(isLeft: boolean): void {
     this.setFlipX(isLeft);
-
-    const body = this.body as Phaser.Physics.Arcade.Body;
-    if (isLeft) {
-      body.setOffset(16.5 * SPRITE_SCALE, 15.5 * SPRITE_SCALE);
-    } else {
-      body.setOffset(17.5 * SPRITE_SCALE, 15.5 * SPRITE_SCALE);
-    }
+    this.updateBodyForScale(isLeft, hitboxConfig);
   }
 }

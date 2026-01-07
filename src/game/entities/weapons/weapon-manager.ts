@@ -24,13 +24,9 @@ export class WeaponManager {
     });
   }
 
-  updateAttack(
-    delta: number,
-    player: Player,
-    enemyManager: EnemyManager
-  ): void {
+  updateAttack(player: Player, enemyManager: EnemyManager): void {
     this.weapons.forEach((weapon) => {
-      weapon.updateAttack(delta, player, enemyManager);
+      weapon.updateAttack(player, enemyManager);
     });
   }
 }

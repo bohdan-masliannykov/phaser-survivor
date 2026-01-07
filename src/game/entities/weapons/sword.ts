@@ -12,13 +12,9 @@ export class Sword extends Weapon {
     this.cooldownMs = 400;
   }
 
-  attack(target: Enemy, player: Player): void {}
+  attack(_target: Enemy, _player: Player): void {}
 
-  updateAttack(
-    delta: number,
-    player: Player,
-    enemyManager: EnemyManager
-  ): void {
+  updateAttack(_player: Player, _enemyManager: EnemyManager): void {
     // Sword does not have a continuous attack effect to update
   }
 }

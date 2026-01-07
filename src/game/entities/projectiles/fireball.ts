@@ -1,4 +1,12 @@
+import type { HitboxConfig } from '@entities/core/game-object';
 import { Projectile } from './projectile';
+
+const hitboxConfig: HitboxConfig = {
+  widthPercent: 0.19,
+  heightPercent: 0.19,
+  offsetXPercent: (1 - 0.19) / 2,
+  offsetYPercent: (1 - 0.19) / 2,
+};
 
 export class Fireball extends Projectile {
   pierce: number = 1; // TODO test piercing
@@ -20,6 +28,7 @@ export class Fireball extends Projectile {
     this.setDepth(5);
 
     this.play('fireball_launch');
+    this.updateBodyForScale(false, hitboxConfig);
   }
 
   isAlive(): boolean {
