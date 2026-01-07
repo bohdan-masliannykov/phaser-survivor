@@ -35,8 +35,14 @@
       "@entities/*": [
         "src/game/entities/*"
       ],
+      "@system/*": [
+        "src/game/system/*"
+      ],
       "@utils/*": [
         "src/game/utils/*"
+      ],
+      "@constants": [
+        "src/game/constants.ts"
       ],
     }
   },

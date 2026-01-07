@@ -1,26 +1,32 @@
-import {
-  ARRIVE_RADIUS,
-  ENEMY_SPEED,
-  MIN_VELOCITY_THRESHOLD,
-  SPRITE_SCALE,
-} from '../constants';
+import { ARRIVE_RADIUS, ENEMY_SPEED, MIN_VELOCITY_THRESHOLD } from '@constants';
+import { GameObject } from '@entities/core/game-object';
 
-export class Enemy extends Phaser.GameObjects.Sprite {
-  velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
-  speed: number = ENEMY_SPEED; // pixels per second
-
+export abstract class Enemy extends GameObject {
+  readonly id: string = Phaser.Utils.String.UUID();
   // When close enough to the target, stop moving to avoid overshoot/flip jitter.
   private readonly arriveRadius = ARRIVE_RADIUS;
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
-    super(scene, x, y, 'enemy', 0);
-    this.setScale(SPRITE_SCALE);
-    scene.add.existing(this);
+  constructor(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    healthOptions?: GameObject['healthOptions'],
+    animations?: GameObject['animations']
+  ) {
+    const rndScale = Phaser.Math.Between(20, 23) / 10;
 
-    // Animation is created once in a Scene (PreloadScene) and shared globally.
-    this.play('enemy-walk');
+    super(
+      scene,
+      x,
+      y,
+      'enemy',
+      ENEMY_SPEED,
+      rndScale,
+      healthOptions,
+      animations
+    );
+    this.play(this.animations.walk);
   }
-
   update(targetX: number, targetY: number, delta: number): void {
     // Chase behavior (no physics):
     // 1) direction = (target - me)
@@ -42,8 +48,8 @@ export class Enemy extends Phaser.GameObjects.Sprite {
       this.setFlipX(this.velocity.x < 0);
     }
 
-    const deltaSeconds = delta / 1000;
-    this.x += this.velocity.x * deltaSeconds * this.speed;
-    this.y += this.velocity.y * deltaSeconds * this.speed;
+    super.move(delta);
   }
+
+  abstract setFacingDirection(isLeft: boolean): void;
 }
