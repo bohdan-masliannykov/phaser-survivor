@@ -1,14 +1,26 @@
+import { ENEMY, PLAYER } from '@constants';
+
 export class PreloadScene extends Phaser.Scene {
   constructor() {
     super({ key: 'PreloadScene' });
   }
 
   preload(): void {
-    this.load.spritesheet('player', '/assets/soldier.png', {
-      frameWidth: 100,
-      frameHeight: 100,
+    Object.values(PLAYER).forEach((char) => {
+      this.load.spritesheet(char.key, `/assets/${char.key}.png`, {
+        frameWidth: 100,
+        frameHeight: 100,
+      });
     });
-    this.load.spritesheet('enemy', '/assets/orc.png', {
+
+    Object.values(ENEMY).forEach((char) => {
+      this.load.spritesheet(char.key, `/assets/${char.key}.png`, {
+        frameWidth: 100,
+        frameHeight: 100,
+      });
+    });
+
+    this.load.spritesheet('fireball', '/assets/fireball.png', {
       frameWidth: 100,
       frameHeight: 100,
     });
@@ -24,45 +36,45 @@ export class PreloadScene extends Phaser.Scene {
     g.destroy();
 
     this.anims.create({
-      key: 'player-idle',
-      frames: this.anims.generateFrameNumbers('player', {
-        start: 0,
-        end: 5,
-      }),
-      frameRate: 8,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: 'player-walk',
-      frames: this.anims.generateFrameNumbers('player', {
-        start: 9,
-        end: 16,
+      key: 'fireball_launch',
+      frames: this.anims.generateFrameNumbers('fireball', {
+        start: 1,
+        end: 3,
       }),
       frameRate: 10,
       repeat: -1,
     });
 
-    this.anims.create({
-      key: 'enemy-walk',
-      frames: this.anims.generateFrameNumbers('enemy', {
-        start: 8,
-        end: 15,
-      }),
-      frameRate: 8,
-      repeat: -1,
+    // Create player animations from PLAYER config
+    Object.values(PLAYER).forEach((char) => {
+      Object.values(char.animations).forEach((anim) => {
+        this.anims.create({
+          key: anim.key,
+          frames: this.anims.generateFrameNumbers(char.key, {
+            start: anim.start,
+            end: anim.end,
+          }),
+          frameRate: anim.frameRate,
+          repeat: anim.repeat,
+        });
+      });
     });
 
-    this.anims.create({
-      key: 'enemy-death',
-      frames: this.anims.generateFrameNumbers('enemy', {
-        start: 40,
-        end: 44,
-      }),
-      frameRate: 8,
-      repeat: 0,
+    // Create enemy animations from ENEMY config
+    Object.values(ENEMY).forEach((char) => {
+      Object.values(char.animations).forEach((anim) => {
+        this.anims.create({
+          key: anim.key,
+          frames: this.anims.generateFrameNumbers(char.key, {
+            start: anim.start,
+            end: anim.end,
+          }),
+          frameRate: anim.frameRate,
+          repeat: anim.repeat,
+        });
+      });
     });
 
-    this.scene.start('GameScene');
+    this.scene.start('CharacterSelectionScene');
   }
 }

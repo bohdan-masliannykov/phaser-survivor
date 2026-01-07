@@ -1,5 +1,8 @@
 export class Projectile extends Phaser.GameObjects.Sprite {
-  private readonly velocity: Phaser.Math.Vector2;
+  private readonly velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(
+    0,
+    0
+  );
   private readonly speed: number; // pixels per second
   private remainingMs: number;
 
@@ -12,15 +15,16 @@ export class Projectile extends Phaser.GameObjects.Sprite {
     lifetimeMs: number
   ) {
     super(scene, x, y, 'projectile', 0);
+    this.setOrigin(0.5, 0.5);
     this.setScale(1);
     this.setDepth(5);
     scene.add.existing(this);
 
     const len = Math.hypot(direction.x, direction.y);
-    this.velocity =
-      len === 0
-        ? new Phaser.Math.Vector2(0, 0)
-        : new Phaser.Math.Vector2(direction.x / len, direction.y / len);
+    if (len !== 0) {
+      this.velocity.set(direction.x / len, direction.y / len);
+    }
+
     this.speed = speed;
     this.remainingMs = lifetimeMs;
   }

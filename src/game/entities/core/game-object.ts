@@ -5,15 +5,28 @@ type HealthOptions = {
   barWidth?: number;
   barHeight?: number;
   barOffsetY?: number;
+  show?: boolean;
 };
 
-export class GameObject extends Phaser.GameObjects.Sprite {
+type ObjectAnimation = {
+  idle: string;
+  walk: string;
+  death: string;
+};
+
+export class GameObject extends Phaser.Physics.Arcade.Sprite {
   velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
   speed: number = 0; // pixels per second
   maxHealth: number = 100;
   health: number = 100;
   healthBar?: HealthBar;
   private barOffsetY: number = 12;
+  animations: ObjectAnimation = {
+    idle: 'idle',
+    walk: 'walk',
+    death: 'death',
+  };
+  healthOptions?: HealthOptions;
 
   constructor(
     scene: Phaser.Scene,
@@ -22,12 +35,18 @@ export class GameObject extends Phaser.GameObjects.Sprite {
     texture: string,
     speed: number,
     scale: number = 1,
-    healthOptions?: HealthOptions
+    healthOptions?: HealthOptions,
+    animations?: ObjectAnimation
   ) {
     super(scene, x, y, texture);
+
+    this.animations = animations ?? {
+      idle: 'idle',
+      walk: 'walk',
+      death: 'death',
+    };
     this.speed = speed;
     this.setScale(scale);
-    scene.add.existing(this);
 
     if (healthOptions) {
       this.maxHealth = healthOptions.maxHealth ?? this.maxHealth;
@@ -39,9 +58,13 @@ export class GameObject extends Phaser.GameObjects.Sprite {
         y - this.barOffsetY,
         healthOptions.barWidth ?? 24,
         healthOptions.barHeight ?? 4,
-        this.maxHealth
+        this.maxHealth,
+        healthOptions.show
       );
     }
+    this.setOrigin(0.5, 0.5);
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
   }
 
   move(delta: number): void {
@@ -75,13 +98,27 @@ export class GameObject extends Phaser.GameObjects.Sprite {
     super.destroy(fromScene);
   }
 
-  destroyWithAnimation(deathAnimKey: string, fromScene?: boolean): void {
+  applyKnockback(fromX: number, fromY: number, force: number) {
+    const dx = this.x - fromX;
+    const dy = this.y - fromY;
+    const length = Math.sqrt(dx * dx + dy * dy) || 1;
+    const knockbackX = (dx / length) * force;
+    const knockbackY = (dy / length) * force;
+
+    this.x += knockbackX;
+    this.y += knockbackY;
+  }
+
+  destroyWithAnimation(deathAnimKey?: string, fromScene?: boolean): void {
     this.velocity.set(0, 0);
     this.healthBar?.setVisible(false);
 
-    this.play(deathAnimKey).once('animationcomplete', () => {
-      this.healthBar?.destroy();
-      super.destroy(fromScene);
-    });
+    this.play(deathAnimKey ?? this.animations.death).once(
+      'animationcomplete',
+      () => {
+        this.healthBar?.destroy();
+        super.destroy(fromScene);
+      }
+    );
   }
 }

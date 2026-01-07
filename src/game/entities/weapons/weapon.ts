@@ -1,20 +1,32 @@
-export class Weapon {
-  private minDamage: number = 5;
-  private maxDamage: number = 10;
-  private cooldownMs: number = 500;
-  private lastAttackTime: number = 0;
+import type { Enemy } from '@entities/enemies/enemy';
+import type { EnemyManager } from '@entities/enemies/enemy-manager';
+import type { Player } from '@entities/player/player';
 
-  behavior: any; // TODO behavior class
+export abstract class Weapon {
+  protected minDamage: number = 5;
+  protected maxDamage: number = 10;
+  protected cooldownMs: number = 500;
+  protected _lastAttackTime: number = 0;
+  protected projectileCount: number = 1;
 
   constructor() {}
 
   getDamage(): number {
-    // Simple random damage between min and max
-    return 0;
+    return Phaser.Math.Between(this.minDamage, this.maxDamage);
   }
 
-  canAttack(currentTime: number): boolean {
-    // Check if enough time has passed since last attack
-    return true;
+  updateCooldown(currentTime: number): void {
+    this._lastAttackTime = currentTime;
   }
+
+  isOffCooldown(currentTime: number): boolean {
+    return currentTime - this._lastAttackTime >= this.cooldownMs;
+  }
+
+  abstract attack(target: Enemy, player: Player): void;
+  abstract updateAttack(
+    delta: number,
+    player: Player,
+    enemyManager: EnemyManager
+  ): void;
 }
