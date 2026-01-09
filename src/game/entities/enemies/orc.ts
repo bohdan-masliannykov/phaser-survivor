@@ -1,6 +1,13 @@
-import { ENEMY, SPRITE_SCALE } from '@constants';
+import { ENEMY } from '@constants';
 import { Enemy } from './enemy';
+import type { HitboxConfig } from '@entities/core/game-object';
 
+const hitboxConfig: HitboxConfig = {
+  widthPercent: 0.15,
+  heightPercent: 0.15,
+  offsetXPercent: (1 - 0.15) / 2,
+  offsetYPercent: 0.41,
+};
 export class Orc extends Enemy {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(
@@ -12,6 +19,7 @@ export class Orc extends Enemy {
         barWidth: 24,
         barHeight: 3,
         barOffsetY: 18,
+        show: true,
       },
       {
         idle: ENEMY.orc.animations.idle.key,
@@ -20,14 +28,11 @@ export class Orc extends Enemy {
       }
     );
 
-    const body = this.body as Phaser.Physics.Arcade.Body;
-
-    body.setSize(6 * this.scale, 7.5 * this.scale);
-    body.setOffset(17.5 * this.scale, 15.5 * this.scale);
+    this.updateBodyForScale(false, hitboxConfig);
   }
 
   setFacingDirection(isLeft: boolean): void {
     this.setFlipX(isLeft);
-    //todo flip offset adjust
+    this.updateBodyForScale(isLeft, hitboxConfig);
   }
 }

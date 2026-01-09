@@ -14,8 +14,14 @@ type ObjectAnimation = {
   death: string;
 };
 
+export type HitboxConfig = {
+  widthPercent: number;
+  heightPercent: number;
+  offsetXPercent: number;
+  offsetYPercent: number;
+};
+
 export class GameObject extends Phaser.Physics.Arcade.Sprite {
-  velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
   speed: number = 0; // pixels per second
   maxHealth: number = 100;
   health: number = 100;
@@ -67,14 +73,24 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
   }
 
-  move(delta: number): void {
-    const deltaSeconds = Math.min(delta / 1000, 1 / 15);
-    this.x += this.velocity.x * deltaSeconds * this.speed;
-    this.y += this.velocity.y * deltaSeconds * this.speed;
-    if (this.healthBar) {
+  move(directions: { x: number; y: number }): void {
+    const norm = Math.sqrt(
+      directions.x * directions.x + directions.y * directions.y
+    );
+
+    if (norm > 0) {
+      const vx = (directions.x / (norm || 1)) * this.speed;
+      const vy = (directions.y / (norm || 1)) * this.speed;
+      this.setVelocity(vx, vy);
+    } else {
+      this.setVelocity(0, 0);
+    }
+
+    // Update health bar position to follow sprite
+    if (this.healthBar && this.body) {
       this.healthBar.setPosition(
-        this.x - this.healthBar.width / 2,
-        this.y - this.barOffsetY
+        this.body.center.x,
+        this.body.bottom + this.barOffsetY
       );
     }
   }
@@ -109,8 +125,33 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
     this.y += knockbackY;
   }
 
+  /**
+   * Updates the body size and offset based on the current scale and facing direction.
+   * Optionally pass isLeft to flip the offset horizontally.
+   * Accepts a config object for hitbox percentages.
+   */
+  updateBodyForScale(isLeft: boolean = false, config: HitboxConfig): void {
+    const body = this.body as Phaser.Physics.Arcade.Body;
+
+    const frameWidth = this.width / this.scaleX;
+    const frameHeight = this.height / this.scaleY;
+
+    const { widthPercent, heightPercent, offsetXPercent, offsetYPercent } =
+      config;
+
+    const bodyWidth = frameWidth * widthPercent * this.scaleX;
+    const bodyHeight = frameHeight * heightPercent * this.scaleY;
+    const offsetY = frameHeight * offsetYPercent * this.scaleY;
+    const offsetX = isLeft
+      ? frameWidth * (1 - offsetXPercent - widthPercent) * this.scaleX
+      : frameWidth * offsetXPercent * this.scaleX;
+
+    body.setSize(bodyWidth, bodyHeight);
+    body.setOffset(offsetX, offsetY);
+  }
+
   destroyWithAnimation(deathAnimKey?: string, fromScene?: boolean): void {
-    this.velocity.set(0, 0);
+    this.setVelocity(0, 0);
     this.healthBar?.setVisible(false);
 
     this.play(deathAnimKey ?? this.animations.death).once(

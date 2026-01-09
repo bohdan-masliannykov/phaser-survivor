@@ -1,15 +1,17 @@
 import { ENEMY_SPAWN_INTERVAL_MS, SPAWN_MARGIN } from '@constants';
 import type { Enemy } from './enemy';
 import { EnemyFactory } from './enemy-factory';
+import type { GameScene } from '@scenes/game-scene';
 
 // TODO : convert to Phaser.Group when switching to Arcade Physics
 // add different behaviors for enemies spawning (waves, boss fights, etc)
 
 export class EnemyManager {
-  private scene: Phaser.Scene;
+  declare scene: GameScene;
+
   private enemiesGroup: Phaser.GameObjects.Group;
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: GameScene) {
     this.scene = scene;
     this.enemiesGroup = this.scene.physics.add.group();
   }
@@ -64,15 +66,16 @@ export class EnemyManager {
     });
 
     this.scene.physics.add.collider(this.enemiesGroup, this.enemiesGroup);
+    this.scene.physics.add.collider(this.enemiesGroup, this.scene.player);
   }
 
   getEnemies(): Enemy[] {
     return this.enemiesGroup.getChildren() as Enemy[];
   }
 
-  updateEnemies(playerX: number, playerY: number, delta: number): void {
+  updateEnemies(playerX: number, playerY: number): void {
     this.getEnemies().forEach((enemy) =>
-      (enemy as Enemy).update(playerX, playerY, delta)
+      (enemy as Enemy).update(playerX, playerY)
     );
   }
 

@@ -61,16 +61,12 @@ export class GameScene extends Phaser.Scene {
     this.enemyManager.initializeSpawner();
   }
 
-  update(_time: number, delta: number): void {
+  update(): void {
     const move = this.inputSystem.getMoveIntent();
 
-    this.player.update(move, delta);
-    this.enemyManager.updateEnemies(this.player.x, this.player.y, delta);
-    this.player.weaponManager.updateAttack(
-      delta,
-      this.player,
-      this.enemyManager
-    );
+    this.player.update(move);
+    this.enemyManager.updateEnemies(this.player.x, this.player.y);
+    this.player.weaponManager.updateAttack(this.player, this.enemyManager);
 
     this.landscape.update(this.cameras.main);
   }

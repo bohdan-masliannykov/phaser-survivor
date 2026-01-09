@@ -27,6 +27,13 @@ export function getRowFrameRange(
   return { start, end };
 }
 
+export const RARITY_COLORS: Record<string, number> = {
+  common: 0xffffff,
+  magic: 0x4da6ff,
+  rare: 0xffd700,
+  legendary: 0x8b4513,
+};
+
 export const ENEMY = {
   slime: {
     key: 'slime',

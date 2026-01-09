@@ -10,10 +10,10 @@ export class FireWand extends Weapon {
 
   constructor() {
     super();
-
+    this.projectileCount = 3;
     this.minDamage = 8;
     this.maxDamage = 15;
-    this.cooldownMs = 1100;
+    this.cooldownMs = 2400;
   }
 
   attack(nearestEnemy: Enemy, player: Player): void {
@@ -58,24 +58,20 @@ export class FireWand extends Weapon {
     }
   }
 
-  updateAttack(
-    delta: number,
-    player: Player,
-    enemyManager: EnemyManager
-  ): void {
+  updateAttack(_: Player, enemyManager: EnemyManager): void {
     const hitR2 = PROJECTILE_HIT_RADIUS * PROJECTILE_HIT_RADIUS;
 
     const enemies = enemyManager.getEnemies();
     // Iterate backwards so we can remove items safely.
     for (let pIndex = this.projectiles.length - 1; pIndex >= 0; pIndex--) {
       const p = this.projectiles[pIndex];
-      const alive = p.update(delta);
+      p.move();
 
-      if (!alive) {
-        p.destroy();
-        this.projectiles.splice(pIndex, 1);
-        continue;
-      }
+      // if (!alive) {
+      //   p.destroy();
+      //   this.projectiles.splice(pIndex, 1);
+      //   continue;
+      // }
 
       // Naive collision: bullet vs all enemies (fine for early prototype).
       for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
