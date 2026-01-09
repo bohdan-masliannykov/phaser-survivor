@@ -24,7 +24,10 @@ export abstract class Enemy extends GameObject {
       animations
     );
     this.play(this.animations.walk);
+    //TODO implement glow effect depending on rarity
+    // this.postFX.addGlow(RARITY_COLORS['legendary'], 5, 0, false, 0.1, 5);
   }
+
   update(targetX: number, targetY: number): void {
     const dx = targetX - this.x;
     const dy = targetY - this.y;
