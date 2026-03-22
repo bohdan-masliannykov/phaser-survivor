@@ -8,21 +8,21 @@ export class EnemyManager {
 
   private enemyPool: EnemyPool;
   private spawnTimer: Phaser.Time.TimerEvent | null = null;
+  onEnemyDeath?: (x: number, y: number, enemyType: string) => void;
 
-  constructor(scene: GameScene) {
+  constructor(
+    scene: GameScene,
+    onEnemyDeath?: (x: number, y: number, enemyType: string) => void
+  ) {
     this.scene = scene;
+    this.onEnemyDeath = onEnemyDeath;
 
-    // Initialize the object pool with configuration
     this.enemyPool = new EnemyPool(scene, {
       initialSize: 50,
-      maxSize: 1000, // Max 1000 active enemies at once
+      maxSize: 1000,
       enemyTypes: Object.keys(ENEMY) as (keyof typeof ENEMY)[],
+      onEnemyDeath,
     });
-
-    console.log(
-      '🛠️ Enemy Manager initialized with pooling system',
-      this.enemyPool.getPoolStats()
-    );
   }
 
   initializeSpawner() {
@@ -37,10 +37,9 @@ export class EnemyManager {
       },
     });
 
-    // Set up collisions with the physics group from the pool
+    // Enemy-enemy collisions for separation, no player collider — enemies overlap player
     const enemiesGroup = this.enemyPool.getPhysicsGroup();
     this.scene.physics.add.collider(enemiesGroup, enemiesGroup);
-    this.scene.physics.add.collider(enemiesGroup, this.scene.player);
   }
 
   /**
@@ -113,6 +112,29 @@ export class EnemyManager {
    */
   getPoolStats() {
     return this.enemyPool.getPoolStats();
+  }
+
+  pauseSpawning(): void {
+    if (this.spawnTimer) this.spawnTimer.paused = true;
+  }
+
+  resumeSpawning(): void {
+    if (this.spawnTimer) this.spawnTimer.paused = false;
+  }
+
+  updateSpawnRate(multiplier: number): void {
+    if (!this.spawnTimer) return;
+    const newDelay = Math.max(200, Math.round(ENEMY_SPAWN_INTERVAL_MS * multiplier));
+    if (newDelay !== this.spawnTimer.delay) {
+      this.spawnTimer.destroy();
+      this.spawnTimer = this.scene.time.addEvent({
+        delay: newDelay,
+        loop: true,
+        callback: () => {
+          this.spawnEnemy();
+        },
+      });
+    }
   }
 
   /**

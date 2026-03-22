@@ -15,7 +15,7 @@ export class Skeleton extends Enemy {
         offsetYPercent: 0.42,
       },
       {
-        maxHealth: 40,
+        maxHealth: 20,
         barWidth: 24,
         barHeight: 3,
         barOffsetY: 18,

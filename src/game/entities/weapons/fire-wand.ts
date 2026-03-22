@@ -6,6 +6,7 @@ import { PROJECTILE_HIT_RADIUS } from '@constants';
 
 export class FireWand extends Weapon {
   projectiles: Fireball[] = [];
+  basePierce: number = 1;
 
   constructor() {
     super();
@@ -13,6 +14,14 @@ export class FireWand extends Weapon {
     this.minDamage = 8;
     this.maxDamage = 15;
     this.cooldownMs = 2400;
+  }
+
+  addProjectile(): void {
+    this.projectileCount++;
+  }
+
+  addPierce(): void {
+    this.basePierce++;
   }
 
   attack(nearestEnemy: Enemy, player: Player): void {
@@ -28,7 +37,7 @@ export class FireWand extends Weapon {
       const length = Math.sqrt(dx * dx + dy * dy) || 1;
       const velocity = { x: dx / length, y: dy / length };
       this.projectiles.push(
-        new Fireball(nearestEnemy.scene, player.x, player.y, velocity)
+        new Fireball(nearestEnemy.scene, player.x, player.y, velocity, this.basePierce)
       );
     } else {
       // Spread shot
@@ -50,7 +59,7 @@ export class FireWand extends Weapon {
         const angle = startAngle + i * angleStep;
         const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
         this.projectiles.push(
-          new Fireball(nearestEnemy.scene, player.x, player.y, velocity)
+          new Fireball(nearestEnemy.scene, player.x, player.y, velocity, this.basePierce)
         );
       }
     }
@@ -70,10 +79,13 @@ export class FireWand extends Weapon {
 
       for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
         const e = enemies[eIndex];
+        if (e.isDead() || p.hitEnemies.has(e.id)) continue;
+
         const dx = e.x - p.x;
         const dy = e.y - p.y;
 
         if (dx * dx + dy * dy <= hitR2) {
+          p.hitEnemies.add(e.id);
           e.receiveDamage(this.getDamage(), p.x, p.y, 10);
 
           p.onEnemyHit();

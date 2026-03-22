@@ -13,6 +13,10 @@ export class WeaponManager {
     return this.weapons.get(name);
   }
 
+  getAllWeapons(): Weapon[] {
+    return Array.from(this.weapons.values());
+  }
+
   hasReadyWeapon(currentTime: number): boolean {
     for (const weapon of this.weapons.values()) {
       if (weapon.isOffCooldown(currentTime)) return true;

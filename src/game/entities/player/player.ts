@@ -5,6 +5,7 @@ import { WeaponManager } from '@entities/weapons/weapon-manager';
 export abstract class Player extends GameObject {
   readonly id: string = Phaser.Utils.String.UUID();
   weaponManager: WeaponManager = new WeaponManager();
+  pickupRadiusMultiplier: number = 1;
 
   constructor(
     scene: Phaser.Scene,

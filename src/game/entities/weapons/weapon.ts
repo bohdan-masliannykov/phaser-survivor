@@ -22,6 +22,15 @@ export abstract class Weapon {
     return currentTime - this._lastAttackTime >= this.cooldownMs;
   }
 
+  scaleDamage(multiplier: number): void {
+    this.minDamage = Math.round(this.minDamage * multiplier);
+    this.maxDamage = Math.round(this.maxDamage * multiplier);
+  }
+
+  reduceCooldown(multiplier: number): void {
+    this.cooldownMs = Math.round(this.cooldownMs * multiplier);
+  }
+
   abstract attack(target: Enemy, player: Player): void;
   abstract updateAttack(player: Player, enemies: Enemy[]): void;
 }

@@ -15,7 +15,7 @@ export class Orc extends Enemy {
         offsetYPercent: 0.41,
       },
       {
-        maxHealth: 50,
+        maxHealth: 25,
         barWidth: 24,
         barHeight: 3,
         barOffsetY: 18,

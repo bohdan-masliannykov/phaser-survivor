@@ -9,15 +9,18 @@ const hitboxConfig: HitboxConfig = {
 };
 
 export class Fireball extends Projectile {
-  pierce: number = 1; // TODO test piercing
+  pierce: number = 1;
+  readonly hitEnemies: Set<string> = new Set();
 
   constructor(
     scene: Phaser.Scene,
     x: number,
     y: number,
-    direction: { x: number; y: number }
+    direction: { x: number; y: number },
+    pierce: number = 1
   ) {
     super(scene, x, y, direction, 150, 8000);
+    this.pierce = pierce;
     const dx = direction.x;
     const dy = direction.y;
     const angle = Math.atan2(dy, dx);

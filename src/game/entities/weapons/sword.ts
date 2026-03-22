@@ -1,19 +1,79 @@
 import type { Enemy } from '@entities/enemies/enemy';
 import { Weapon } from './weapon';
 import type { Player } from '@entities/player/player';
+import { SWORD_RADIUS, SWORD_SLASH_DURATION } from '@constants';
 
-//TODO finish sword attack logic
 export class Sword extends Weapon {
+  private radius: number = SWORD_RADIUS;
+  private slashGraphics: Phaser.GameObjects.Graphics | null = null;
+
   constructor() {
     super();
     this.minDamage = 8;
     this.maxDamage = 15;
-    this.cooldownMs = 400;
+    this.cooldownMs = 1200;
   }
 
-  attack(_target: Enemy, _player: Player): void {}
+  increaseRadius(multiplier: number): void {
+    this.radius = Math.round(this.radius * multiplier);
+  }
 
-  updateAttack(_player: Player, _enemies: Enemy[]): void {
-    // Sword does not have a continuous attack effect to update
+  attack(_target: Enemy, player: Player): void {
+    if (!this.isOffCooldown(player.scene.time.now)) return;
+    this.updateCooldown(player.scene.time.now);
+
+    this.showSlashEffect(player);
+  }
+
+  updateAttack(player: Player, enemies: Enemy[]): void {
+    // Sword continuously checks for enemies in range during the slash visual
+    if (!this.slashGraphics) return;
+
+    const r2 = this.radius * this.radius;
+    for (const enemy of enemies) {
+      if (!enemy.active || !enemy.visible) continue;
+      const dx = enemy.x - player.x;
+      const dy = enemy.y - player.y;
+      if (dx * dx + dy * dy <= r2) {
+        enemy.receiveDamage(this.getDamage(), player.x, player.y, 15);
+      }
+    }
+
+    // Only damage once per slash — remove graphics reference after first frame of damage
+    this.slashGraphics = null;
+  }
+
+  private showSlashEffect(player: Player): void {
+    const gfx = player.scene.add.graphics();
+    gfx.setDepth(10);
+    this.slashGraphics = gfx;
+
+    // Draw rotating arc
+    let elapsed = 0;
+    const duration = SWORD_SLASH_DURATION;
+    const update = (_event: Phaser.Time.TimerEvent, delta: number) => {
+      elapsed += delta;
+      const progress = elapsed / duration;
+
+      gfx.clear();
+      gfx.lineStyle(3, 0xffffff, 1 - progress * 0.7);
+      const startAngle = Phaser.Math.DegToRad(-90 + progress * 360);
+      const endAngle = startAngle + Phaser.Math.DegToRad(120);
+      gfx.beginPath();
+      gfx.arc(player.x, player.y, this.radius, startAngle, endAngle, false);
+      gfx.strokePath();
+
+      if (elapsed >= duration) {
+        gfx.destroy();
+      }
+    };
+
+    player.scene.time.addEvent({
+      delay: 16,
+      repeat: Math.ceil(duration / 16),
+      callback: function (this: Phaser.Time.TimerEvent) {
+        update(this, 16);
+      },
+    });
   }
 }

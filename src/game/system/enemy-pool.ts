@@ -23,6 +23,7 @@ export interface PoolConfig {
   initialSize: number;
   maxSize: number;
   enemyTypes: (keyof typeof ENEMY)[];
+  onEnemyDeath?: (x: number, y: number, enemyType: string) => void;
 }
 
 export class EnemyPool {
@@ -118,7 +119,10 @@ export class EnemyPool {
 
     this.activeEnemies.add(enemy);
     this.activeCacheDirty = true;
-    enemy.onDeath = () => this.release(enemy);
+    enemy.onDeath = () => {
+      this.poolConfig.onEnemyDeath?.(enemy.x, enemy.y, enemy.texture.key);
+      this.release(enemy);
+    };
     return enemy;
   }
 

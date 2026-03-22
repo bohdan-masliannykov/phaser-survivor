@@ -27,6 +27,34 @@ export function getRowFrameRange(
   return { start, end };
 }
 
+// XP & Leveling
+export const XP_GEM_PICKUP_RADIUS = 60; // magnetic pull starts
+export const XP_GEM_COLLECT_RADIUS = 20; // instant pickup
+export const XP_GEM_MAGNETIC_SPEED = 300; // px/s when being pulled
+export const XP_PER_ENEMY: Record<string, number> = {
+  slime: 1,
+  orc: 3,
+  skeleton: 2,
+};
+export const XP_THRESHOLDS = [
+  5, 10, 20, 30, 50, 75, 100, 140, 180, 230, 280, 340, 400, 470, 550,
+  640, 740, 850, 970, 1100,
+]; // XP needed to reach level 2, 3, 4, ...
+
+// Sword AoE
+export const SWORD_RADIUS = 80; // px around player
+export const SWORD_SLASH_DURATION = 300; // visual duration ms
+
+// Difficulty scaling
+export const DIFFICULTY_INTERVAL_MS = 60_000; // scale every 60s
+export const DIFFICULTY_HP_MULT = 0.15; // +15% HP per interval
+export const DIFFICULTY_SPEED_MULT = 0.05; // +5% speed per interval
+export const DIFFICULTY_SPAWN_MULT = 0.90; // spawn delay *0.9 per interval (faster)
+
+// Player damage from enemies
+export const ENEMY_CONTACT_DAMAGE = 5;
+export const ENEMY_CONTACT_COOLDOWN_MS = 500; // invulnerability frames
+
 export const RARITY_COLORS: Record<string, number> = {
   common: 0xffffff,
   magic: 0x4da6ff,
@@ -53,7 +81,7 @@ export const ENEMY = {
       death: {
         key: 'slime-death',
         ...getRowFrameRange(12, 4, 5),
-        frameRate: 8,
+        frameRate: 14,
         repeat: 0,
       },
     },
@@ -76,7 +104,7 @@ export const ENEMY = {
       death: {
         key: 'orc-death',
         ...getRowFrameRange(8, 6, 5),
-        frameRate: 8,
+        frameRate: 14,
         repeat: 0,
       },
     },
@@ -99,7 +127,7 @@ export const ENEMY = {
       death: {
         key: 'skeleton-death',
         ...getRowFrameRange(8, 4, 6),
-        frameRate: 8,
+        frameRate: 14,
         repeat: 0,
       },
     },
@@ -125,7 +153,7 @@ export const PLAYER = {
       death: {
         key: 'soldier-death',
         ...getRowFrameRange(9, 4, 6),
-        frameRate: 8,
+        frameRate: 14,
         repeat: 0,
       },
     },
@@ -148,7 +176,7 @@ export const PLAYER = {
       death: {
         key: 'wizzard-death',
         ...getRowFrameRange(15, 4, 9),
-        frameRate: 8,
+        frameRate: 14,
         repeat: 0,
       },
     },
