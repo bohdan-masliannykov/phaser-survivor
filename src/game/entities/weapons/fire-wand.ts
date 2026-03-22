@@ -3,7 +3,6 @@ import { Weapon } from './weapon';
 import { Fireball } from '@entities/projectiles/fireball';
 import type { Player } from '@entities/player/player';
 import { PROJECTILE_HIT_RADIUS } from '@constants';
-import type { EnemyManager } from '@entities/enemies/enemy-manager';
 
 export class FireWand extends Weapon {
   projectiles: Fireball[] = [];
@@ -57,35 +56,25 @@ export class FireWand extends Weapon {
     }
   }
 
-  updateAttack(_: Player, enemyManager: EnemyManager): void {
+  updateAttack(_: Player, enemies: Enemy[]): void {
     const hitR2 = PROJECTILE_HIT_RADIUS * PROJECTILE_HIT_RADIUS;
 
-    const enemies = enemyManager.getEnemies();
-    // Iterate backwards so we can remove items safely.
     for (let pIndex = this.projectiles.length - 1; pIndex >= 0; pIndex--) {
       const p = this.projectiles[pIndex];
-      p.move();
 
-      // if (!alive) {
-      //   p.destroy();
-      //   this.projectiles.splice(pIndex, 1);
-      //   continue;
-      // }
+      if (p.isExpired()) {
+        p.destroy();
+        this.projectiles.splice(pIndex, 1);
+        continue;
+      }
 
-      // Naive collision: bullet vs all ensemies (fine for early prototype).
       for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
         const e = enemies[eIndex];
         const dx = e.x - p.x;
         const dy = e.y - p.y;
 
         if (dx * dx + dy * dy <= hitR2) {
-          e.takeDamage(this.getDamage());
-          e.applyKnockback(p.x, p.y, 10);
-          if (e.isDead()) {
-            e.releaseObjectWithAnimation(undefined, () =>
-              enemyManager.removeEnemy(e)
-            );
-          }
+          e.receiveDamage(this.getDamage(), p.x, p.y, 10);
 
           p.onEnemyHit();
           if (p.isAlive() === false) {

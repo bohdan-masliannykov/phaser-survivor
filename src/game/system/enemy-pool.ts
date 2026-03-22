@@ -17,11 +17,12 @@
 import type { Enemy } from '@entities/enemies/enemy';
 import { EnemyFactory } from '@entities/enemies/enemy-factory';
 import type { GameScene } from '@scenes/game-scene';
+import type { ENEMY } from '@constants';
 
 export interface PoolConfig {
-  initialSize: number; // How many enemies to pre-create
-  maxSize: number; // Maximum enemies allowed at once
-  enemyTypes: string[]; // Which enemy types to pool (slime, skeleton, orc)
+  initialSize: number;
+  maxSize: number;
+  enemyTypes: (keyof typeof ENEMY)[];
 }
 
 export class EnemyPool {
@@ -36,6 +37,8 @@ export class EnemyPool {
 
   // Currently active enemies in the game
   private activeEnemies: Set<Enemy> = new Set();
+  private activeCache: Enemy[] = [];
+  private activeCacheDirty: boolean = false;
 
   // Physics group for collision detection
   private enemiesGroup: Phaser.Physics.Arcade.Group;
@@ -69,7 +72,7 @@ export class EnemyPool {
         this.scene,
         0,
         0,
-        randomType as any
+        randomType
       );
 
       // Start as inactive
@@ -91,42 +94,31 @@ export class EnemyPool {
     // 2. Recycle oldest active enemy
     // 3. Return null (don't spawn)
 
-    let enemy: Enemy | null = null;
-    console.log(this.availableEnemies);
+    let enemy: Enemy;
+
     if (this.availableEnemies.length > 0) {
       enemy = this.availableEnemies.pop()!;
       enemy.restore(x, y);
+    } else if (this.allEnemies.length < this.poolConfig.maxSize) {
+      const randomType =
+        this.poolConfig.enemyTypes[
+          Math.floor(Math.random() * this.poolConfig.enemyTypes.length)
+        ];
+
+      enemy = EnemyFactory.createEnemyByType(this.scene, x, y, randomType);
+      this.allEnemies.push(enemy);
+      this.enemiesGroup.add(enemy);
+
+      console.warn(
+        `⚠️ Pool expanded! Now at ${this.allEnemies.length}/${this.poolConfig.maxSize}`
+      );
     } else {
-      // Option: Create new enemy if under max size
-      if (this.allEnemies.length < this.poolConfig.maxSize) {
-        const randomType =
-          this.poolConfig.enemyTypes[
-            Math.floor(Math.random() * this.poolConfig.enemyTypes.length)
-          ];
-
-        enemy = EnemyFactory.createEnemyByType(
-          this.scene,
-          x,
-          y,
-          randomType as any
-        );
-
-        this.allEnemies.push(enemy);
-        this.enemiesGroup.add(enemy);
-        this.activeEnemies.add(enemy);
-
-        console.warn(
-          `⚠️ Pool expanded! Now at ${this.allEnemies.length}/${this.poolConfig.maxSize}`
-        );
-        return enemy;
-      }
-
-      // Pool exhausted
       return null;
     }
 
     this.activeEnemies.add(enemy);
-    // console.log(this.getPoolStats());
+    this.activeCacheDirty = true;
+    enemy.onDeath = () => this.release(enemy);
     return enemy;
   }
 
@@ -139,6 +131,7 @@ export class EnemyPool {
     }
 
     this.activeEnemies.delete(enemy);
+    this.activeCacheDirty = true;
 
     enemy.deactivate();
 
@@ -158,7 +151,11 @@ export class EnemyPool {
    * Get all currently active enemies
    */
   public getActive(): Enemy[] {
-    return Array.from(this.activeEnemies);
+    if (this.activeCacheDirty) {
+      this.activeCache = Array.from(this.activeEnemies);
+      this.activeCacheDirty = false;
+    }
+    return this.activeCache;
   }
 
   /**
@@ -207,6 +204,8 @@ export class EnemyPool {
    */
   public destroy(): void {
     this.activeEnemies.clear();
+    this.activeCache.length = 0;
+    this.activeCacheDirty = false;
     this.availableEnemies.length = 0;
     this.allEnemies.forEach((enemy) => enemy.destroy());
     this.allEnemies.length = 0;

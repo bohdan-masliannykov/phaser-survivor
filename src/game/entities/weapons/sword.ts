@@ -1,7 +1,6 @@
 import type { Enemy } from '@entities/enemies/enemy';
 import { Weapon } from './weapon';
 import type { Player } from '@entities/player/player';
-import type { EnemyManager } from '@entities/enemies/enemy-manager';
 
 //TODO finish sword attack logic
 export class Sword extends Weapon {
@@ -14,7 +13,7 @@ export class Sword extends Weapon {
 
   attack(_target: Enemy, _player: Player): void {}
 
-  updateAttack(_player: Player, _enemyManager: EnemyManager): void {
+  updateAttack(_player: Player, _enemies: Enemy[]): void {
     // Sword does not have a continuous attack effect to update
   }
 }

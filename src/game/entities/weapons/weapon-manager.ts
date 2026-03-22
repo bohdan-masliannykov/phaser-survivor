@@ -1,20 +1,23 @@
 import type { Enemy } from '@entities/enemies/enemy';
 import type { Weapon } from './weapon';
 import type { Player } from '@entities/player/player';
-import type { EnemyManager } from '@entities/enemies/enemy-manager';
 
 export class WeaponManager {
   private weapons: Map<string, Weapon> = new Map();
 
-  constructor() {}
-
   addWeapon(name: string, weapon: Weapon): void {
     this.weapons.set(name, weapon);
-    console.log('Added weapon:', name);
   }
 
   getWeapon(name: string): Weapon | undefined {
     return this.weapons.get(name);
+  }
+
+  hasReadyWeapon(currentTime: number): boolean {
+    for (const weapon of this.weapons.values()) {
+      if (weapon.isOffCooldown(currentTime)) return true;
+    }
+    return false;
   }
 
   tryAttack(nearestEnemy: Enemy | undefined, player: Player): void {
@@ -24,9 +27,9 @@ export class WeaponManager {
     });
   }
 
-  updateAttack(player: Player, enemyManager: EnemyManager): void {
+  updateAttack(player: Player, enemies: Enemy[]): void {
     this.weapons.forEach((weapon) => {
-      weapon.updateAttack(player, enemyManager);
+      weapon.updateAttack(player, enemies);
     });
   }
 }

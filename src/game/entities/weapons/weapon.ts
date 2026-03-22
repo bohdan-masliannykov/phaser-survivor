@@ -1,5 +1,4 @@
 import type { Enemy } from '@entities/enemies/enemy';
-import type { EnemyManager } from '@entities/enemies/enemy-manager';
 import type { Player } from '@entities/player/player';
 
 export abstract class Weapon {
@@ -24,5 +23,5 @@ export abstract class Weapon {
   }
 
   abstract attack(target: Enemy, player: Player): void;
-  abstract updateAttack(player: Player, enemyManager: EnemyManager): void;
+  abstract updateAttack(player: Player, enemies: Enemy[]): void;
 }

@@ -33,6 +33,7 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
     death: 'death',
   };
   healthOptions?: HealthOptions;
+  protected hitboxConfig?: HitboxConfig;
 
   constructor(
     scene: Phaser.Scene,
@@ -64,7 +65,6 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
         y - this.barOffsetY,
         healthOptions.barWidth ?? 24,
         healthOptions.barHeight ?? 4,
-        this.maxHealth,
         healthOptions.show
       );
     }
@@ -101,12 +101,13 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
 
   takeDamage(amount: number): void {
     this.health = Math.max(0, this.health - amount);
-    this.healthBar?.takeDamage(amount);
+    this.healthBar?.showDamageText(amount);
+    this.healthBar?.updateDisplay(this.health / this.maxHealth);
   }
 
   heal(amount: number): void {
     this.health = Math.min(this.maxHealth, this.health + amount);
-    this.healthBar?.heal(amount);
+    this.healthBar?.updateDisplay(this.health / this.maxHealth);
   }
 
   isDead(): boolean {
@@ -154,6 +155,13 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
     body.setOffset(offsetX, offsetY);
   }
 
+  setFacingDirection(isLeft: boolean): void {
+    this.setFlipX(isLeft);
+    if (this.hitboxConfig) {
+      this.updateBodyForScale(isLeft, this.hitboxConfig);
+    }
+  }
+
   releaseObjectWithAnimation(
     animationKey?: string,
     callback?: () => void
@@ -162,7 +170,7 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
       'animationcomplete',
       () => {
         this.healthBar?.setVisible(false);
-        callback ? callback() : undefined;
+        callback?.();
       }
     );
   }

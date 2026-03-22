@@ -3,7 +3,8 @@ import type { HitboxConfig } from '@entities/core/game-object';
 export class Projectile extends Phaser.Physics.Arcade.Sprite {
   private direction: { x: number; y: number };
   private readonly speed: number; // pixels per second
-  // private remainingMs: number;
+  private readonly birthTime: number;
+  private readonly lifetimeMs: number;
 
   constructor(
     scene: Phaser.Scene,
@@ -11,7 +12,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     y: number,
     direction: { x: number; y: number },
     speed: number,
-    _lifetimeMs: number
+    lifetimeMs: number
   ) {
     super(scene, x, y, 'projectile', 0);
     this.setOrigin(0.5, 0.5);
@@ -21,9 +22,14 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
 
     this.speed = speed;
-    // this.remainingMs = lifetimeMs;
+    this.birthTime = scene.time.now;
+    this.lifetimeMs = lifetimeMs;
     this.direction = direction;
     this.move();
+  }
+
+  isExpired(): boolean {
+    return this.scene.time.now - this.birthTime >= this.lifetimeMs;
   }
 
   move() {

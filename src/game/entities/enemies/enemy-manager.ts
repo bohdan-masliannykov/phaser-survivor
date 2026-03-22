@@ -14,9 +14,9 @@ export class EnemyManager {
 
     // Initialize the object pool with configuration
     this.enemyPool = new EnemyPool(scene, {
-      initialSize: 50, // Start with 100 pre-created enemies
+      initialSize: 50,
       maxSize: 1000, // Max 1000 active enemies at once
-      enemyTypes: [ENEMY.slime.key, ENEMY.skeleton.key, ENEMY.orc.key],
+      enemyTypes: Object.keys(ENEMY) as (keyof typeof ENEMY)[],
     });
 
     console.log(
@@ -95,7 +95,10 @@ export class EnemyManager {
    * Update all active enemies
    */
   updateEnemies(playerX: number, playerY: number): void {
-    this.getEnemies().forEach((enemy) => enemy.update(playerX, playerY));
+    const enemies = this.getEnemies();
+    for (const enemy of enemies) {
+      enemy.update(playerX, playerY, enemies);
+    }
   }
 
   /**

@@ -1,6 +1,4 @@
 export class HealthBar extends Phaser.GameObjects.Container {
-  private maxHealth: number;
-  private health: number;
   private readonly barWidth: number;
   private readonly bar: Phaser.GameObjects.Rectangle;
   private readonly show: boolean = false;
@@ -11,15 +9,12 @@ export class HealthBar extends Phaser.GameObjects.Container {
     y: number,
     width: number,
     height: number,
-    maxHealth: number,
     show: boolean = false
   ) {
     super(scene, x, y);
     scene.add.existing(this);
     this.show = show;
     this.barWidth = width;
-    this.maxHealth = maxHealth;
-    this.health = maxHealth;
     const background = scene.add
       .rectangle((width / 2) * -1, -15, width, height, 0x555555)
       .setOrigin(0, 0);
@@ -32,16 +27,13 @@ export class HealthBar extends Phaser.GameObjects.Container {
     this.add([background, this.bar]);
   }
 
-  private updateBar(): void {
+  updateDisplay(ratio: number): void {
     if (!this.show) return;
-    const ratio = Phaser.Math.Clamp(this.health / this.maxHealth, 0, 1);
-    this.bar.displayWidth = this.barWidth * ratio;
+    const clamped = Phaser.Math.Clamp(ratio, 0, 1);
+    this.bar.displayWidth = this.barWidth * clamped;
   }
 
-  takeDamage(amount: number): void {
-    this.health = Math.max(0, this.health - amount);
-    this.updateBar();
-
+  showDamageText(amount: number): void {
     const dmgText = this.scene.add.text(this.x, this.y, amount.toString(), {
       font: '16px monospace',
       color: '#fff',
@@ -55,15 +47,6 @@ export class HealthBar extends Phaser.GameObjects.Container {
       duration: 500,
       onComplete: () => dmgText.destroy(),
     });
-  }
-
-  heal(amount: number): void {
-    this.health = Math.min(this.maxHealth, this.health + amount);
-    this.updateBar();
-  }
-
-  isDead(): boolean {
-    return this.health <= 0;
   }
 
   hideBar(): void {
