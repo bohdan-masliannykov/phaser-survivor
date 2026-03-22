@@ -25,6 +25,7 @@ export class PreloadScene extends Phaser.Scene {
       frameHeight: 100,
     });
 
+    this.load.image('arrow', '/assets/arrow.png');
     this.load.image('grass', '/assets/grass.png');
   }
 

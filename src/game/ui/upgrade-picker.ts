@@ -1,6 +1,7 @@
 import type { Player } from '@entities/player/player';
 import type { FireWand } from '@entities/weapons/fire-wand';
 import type { Sword } from '@entities/weapons/sword';
+import type { Aura } from '@entities/weapons/aura';
 
 export interface UpgradeOption {
   id: string;
@@ -98,6 +99,17 @@ const ALL_UPGRADES: UpgradeOption[] = [
     canApply: () => true,
     apply: (player) => {
       player.pickupRadiusMultiplier = (player.pickupRadiusMultiplier ?? 1) * 1.4;
+    },
+  },
+  {
+    id: 'aura_radius',
+    name: 'Aura Radius',
+    description: '+20% aura radius',
+    color: 0xffaa88,
+    canApply: (player) => !!player.weaponManager.getWeapon('aura'),
+    apply: (player) => {
+      const aura = player.weaponManager.getWeapon('aura') as Aura | undefined;
+      if (aura) aura.addRadius();
     },
   },
 ];

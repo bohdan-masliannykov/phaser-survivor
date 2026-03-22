@@ -45,6 +45,10 @@ export const XP_THRESHOLDS = [
 export const SWORD_RADIUS = 80; // px around player
 export const SWORD_SLASH_DURATION = 300; // visual duration ms
 
+// Priest Aura
+export const AURA_RADIUS = 120; // px around priest
+export const AURA_DAMAGE_INTERVAL_MS = 400; // tick interval
+
 // Difficulty scaling
 export const DIFFICULTY_INTERVAL_MS = 60_000; // scale every 60s
 export const DIFFICULTY_HP_MULT = 0.15; // +15% HP per interval
@@ -176,6 +180,52 @@ export const PLAYER = {
       death: {
         key: 'wizzard-death',
         ...getRowFrameRange(15, 4, 9),
+        frameRate: 14,
+        repeat: 0,
+      },
+    },
+  },
+  archer: {
+    key: 'archer',
+    animations: {
+      idle: {
+        key: 'archer-idle',
+        ...getRowFrameRange(12, 6, 0),
+        frameRate: 8,
+        repeat: -1,
+      },
+      walk: {
+        key: 'archer-walk',
+        ...getRowFrameRange(12, 8, 1),
+        frameRate: 13,
+        repeat: -1,
+      },
+      death: {
+        key: 'archer-death',
+        ...getRowFrameRange(12, 4, 4),
+        frameRate: 14,
+        repeat: 0,
+      },
+    },
+  },
+  priest: {
+    key: 'priest',
+    animations: {
+      idle: {
+        key: 'priest-idle',
+        ...getRowFrameRange(9, 6, 0),
+        frameRate: 8,
+        repeat: -1,
+      },
+      walk: {
+        key: 'priest-walk',
+        ...getRowFrameRange(9, 8, 1),
+        frameRate: 13,
+        repeat: -1,
+      },
+      death: {
+        key: 'priest-death',
+        ...getRowFrameRange(9, 4, 4),
         frameRate: 14,
         repeat: 0,
       },
