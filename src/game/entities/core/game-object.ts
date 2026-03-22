@@ -74,6 +74,10 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
   }
 
   move(directions: { x: number; y: number }): void {
+    if (this.visible === false) {
+      return;
+    }
+
     const norm = Math.sqrt(
       directions.x * directions.x + directions.y * directions.y
     );
@@ -150,15 +154,15 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
     body.setOffset(offsetX, offsetY);
   }
 
-  destroyWithAnimation(deathAnimKey?: string, fromScene?: boolean): void {
-    this.setVelocity(0, 0);
-    this.healthBar?.setVisible(false);
-
-    this.play(deathAnimKey ?? this.animations.death).once(
+  releaseObjectWithAnimation(
+    animationKey?: string,
+    callback?: () => void
+  ): void {
+    this.play(animationKey ?? this.animations.death).once(
       'animationcomplete',
       () => {
-        this.healthBar?.destroy();
-        super.destroy(fromScene);
+        this.healthBar?.setVisible(false);
+        callback ? callback() : undefined;
       }
     );
   }

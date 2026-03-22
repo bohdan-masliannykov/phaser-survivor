@@ -47,13 +47,15 @@ export class GameScene extends Phaser.Scene {
       delay: 50,
       loop: true,
       callback: () => {
-        const nearestEnemy = getNearestEnemy(
+        const enemy = getNearestEnemy(
           this.player.x,
           this.player.y,
-          this.enemyManager.getEnemies()
+          this.enemyManager.getEnemies(),
+          600
         );
-        if (nearestEnemy) {
-          this.player.weaponManager.tryAttack(nearestEnemy, this.player);
+
+        if (enemy?.active && enemy?.visible) {
+          this.player.weaponManager.tryAttack(enemy, this.player);
         }
       },
     });

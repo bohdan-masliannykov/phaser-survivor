@@ -65,4 +65,12 @@ export class HealthBar extends Phaser.GameObjects.Container {
   isDead(): boolean {
     return this.health <= 0;
   }
+
+  hideBar(): void {
+    this.setVisible(false);
+  }
+
+  showBar() {
+    this.setVisible(true);
+  }
 }

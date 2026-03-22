@@ -29,6 +29,12 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create(): void {
+    const graphics = this.make.graphics({ x: 0, y: 0 });
+    graphics.fillStyle(0xff6600, 1);
+    graphics.fillCircle(8, 8, 8); // Small 16x16 circle
+    graphics.generateTexture('fire-particle', 16, 16);
+    graphics.destroy();
+
     const g = this.make.graphics({ x: 0, y: 0 });
     g.fillStyle(0xffff66, 1);
     g.fillCircle(4, 4, 4);

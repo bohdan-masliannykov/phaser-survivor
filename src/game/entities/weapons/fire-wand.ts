@@ -24,7 +24,6 @@ export class FireWand extends Weapon {
 
     const numProjectiles = this.projectileCount;
     if (numProjectiles === 1) {
-      // Direct shot
       const dx = nearestEnemy.x - player.x;
       const dy = nearestEnemy.y - player.y;
       const length = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -35,7 +34,7 @@ export class FireWand extends Weapon {
     } else {
       // Spread shot
       const minSpread = Phaser.Math.DegToRad(25);
-      const maxSpread = Phaser.Math.DegToRad(90);
+      const maxSpread = Phaser.Math.DegToRad(50);
       const totalSpread = Phaser.Math.Linear(
         minSpread,
         maxSpread,
@@ -73,19 +72,19 @@ export class FireWand extends Weapon {
       //   continue;
       // }
 
-      // Naive collision: bullet vs all enemies (fine for early prototype).
+      // Naive collision: bullet vs all ensemies (fine for early prototype).
       for (let eIndex = enemies.length - 1; eIndex >= 0; eIndex--) {
         const e = enemies[eIndex];
         const dx = e.x - p.x;
         const dy = e.y - p.y;
 
         if (dx * dx + dy * dy <= hitR2) {
-          // Prototype behavior: delete enemy on hit.
           e.takeDamage(this.getDamage());
           e.applyKnockback(p.x, p.y, 10);
           if (e.isDead()) {
-            e.destroyWithAnimation();
-            enemyManager.removeEnemy(e);
+            e.releaseObjectWithAnimation(undefined, () =>
+              enemyManager.removeEnemy(e)
+            );
           }
 
           p.onEnemyHit();

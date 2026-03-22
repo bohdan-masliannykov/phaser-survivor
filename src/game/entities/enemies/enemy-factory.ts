@@ -10,7 +10,16 @@ export class EnemyFactory {
     const randomType =
       enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
 
-    switch (randomType) {
+    return this.createEnemyByType(scene, x, y, randomType);
+  }
+
+  static createEnemyByType(
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    type: keyof typeof ENEMY
+  ): Enemy {
+    switch (type) {
       case ENEMY.orc.key:
         return new Orc(scene, x, y);
       case ENEMY.slime.key:
@@ -18,7 +27,7 @@ export class EnemyFactory {
       case ENEMY.skeleton.key:
         return new Skeleton(scene, x, y);
       default:
-        throw new Error(`Unknown enemy type: ${randomType}`);
+        throw new Error(`Unknown enemy type: ${type}`);
     }
   }
 }

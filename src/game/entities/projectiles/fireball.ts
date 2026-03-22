@@ -24,7 +24,7 @@ export class Fireball extends Projectile {
     this.rotation = angle;
 
     this.setTexture('fireball');
-    this.setScale(1.3);
+    this.setScale(2.5);
     this.setDepth(5);
 
     this.play('fireball_launch');

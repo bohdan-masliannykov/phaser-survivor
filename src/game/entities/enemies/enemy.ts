@@ -23,9 +23,14 @@ export abstract class Enemy extends GameObject {
       healthOptions,
       animations
     );
-    this.play(this.animations.walk);
+
+    this.playDefaultAnimation();
     //TODO implement glow effect depending on rarity
     // this.postFX.addGlow(RARITY_COLORS['legendary'], 5, 0, false, 0.1, 5);
+  }
+
+  playDefaultAnimation(): void {
+    this.play(this.animations.walk);
   }
 
   update(targetX: number, targetY: number): void {
@@ -38,6 +43,31 @@ export abstract class Enemy extends GameObject {
     }
 
     super.move(directions);
+  }
+
+  restore(x: number, y: number): void {
+    this.setPosition(x, y);
+    this.setVelocity(0, 0);
+
+    this.heal(this.maxHealth);
+    this.healthBar?.showBar();
+
+    this.setActive(true);
+    this.setVisible(true);
+    this.playDefaultAnimation();
+  }
+
+  startInactive(): void {
+    this.setActive(false);
+    this.setVisible(false);
+    this.healthBar?.hideBar();
+  }
+
+  deactivate(): void {
+    this.setVelocity(0, 0);
+    this.setPosition(0, 0);
+
+    this.startInactive();
   }
 
   abstract setFacingDirection(isLeft: boolean): void;

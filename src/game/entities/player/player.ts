@@ -1,4 +1,4 @@
-import { PLAYER_SPEED, SPRITE_SCALE } from '@constants';
+import { PLAYER_SPEED } from '@constants';
 import { GameObject } from '@entities/core/game-object';
 import { WeaponManager } from '@entities/weapons/weapon-manager';
 
@@ -12,7 +12,7 @@ export abstract class Player extends GameObject {
     y: number,
     animations?: GameObject['animations']
   ) {
-    super(scene, x, y, 'player', PLAYER_SPEED, SPRITE_SCALE, {
+    super(scene, x, y, 'player', PLAYER_SPEED, 2, {
       maxHealth: 100,
       barWidth: 40,
       barHeight: 6,
