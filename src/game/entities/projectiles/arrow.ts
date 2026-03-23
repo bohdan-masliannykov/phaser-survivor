@@ -19,7 +19,7 @@ export class Arrow extends Projectile {
     direction: { x: number; y: number },
     pierce: number = 1
   ) {
-    super(scene, x, y, direction, 250, 8000);
+    super(scene, x, y, direction, 300, 8000);
     this.pierce = pierce;
     const dx = direction.x;
     const dy = direction.y;
@@ -27,7 +27,7 @@ export class Arrow extends Projectile {
     this.rotation = angle;
 
     this.setTexture('arrow');
-    this.setScale(2);
+    this.setScale(1.2);
     this.setDepth(5);
 
     this.updateBodyForScale(false, hitboxConfig);

@@ -14,6 +14,7 @@ export class Sword extends Weapon {
   private radius: number;
   private slashDuration: number;
   private slashGraphics: Phaser.GameObjects.Graphics | null = null;
+  private hitEnemies: Set<string> = new Set();
 
   constructor(stats?: SwordStats) {
     super();
@@ -41,24 +42,25 @@ export class Sword extends Weapon {
     if (!this.isOffCooldown(player.scene.time.now)) return;
     this.updateCooldown(player.scene.time.now);
 
+    this.hitEnemies.clear();
     this.showSlashEffect(player);
   }
 
   updateAttack(player: Player, enemies: Enemy[]): void {
-    // Sword continuously checks for enemies in range during the slash visual
     if (!this.slashGraphics) return;
 
     const r2 = this.radius * this.radius;
     for (const enemy of enemies) {
-      if (!enemy.active || !enemy.visible) continue;
+      if (!enemy.active || !enemy.visible || enemy.isDead()) continue;
+      if (this.hitEnemies.has(enemy.id)) continue;
       const dx = enemy.x - player.x;
       const dy = enemy.y - player.y;
       if (dx * dx + dy * dy <= r2) {
+        this.hitEnemies.add(enemy.id);
         enemy.receiveDamage(this.getDamage(), player.x, player.y, 15);
       }
     }
 
-    // Only damage once per slash — remove graphics reference after first frame of damage
     this.slashGraphics = null;
   }
 

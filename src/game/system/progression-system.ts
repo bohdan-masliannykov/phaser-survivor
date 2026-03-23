@@ -1,10 +1,4 @@
-import {
-  XP_THRESHOLDS,
-  DIFFICULTY_INTERVAL_MS,
-  DIFFICULTY_HP_MULT,
-  DIFFICULTY_SPEED_MULT,
-  DIFFICULTY_SPAWN_MULT,
-} from '@constants';
+import { XP_THRESHOLDS } from '@constants';
 
 export class ProgressionSystem {
   xp: number = 0;
@@ -51,14 +45,13 @@ export class ProgressionSystem {
 
   update(deltaMs: number): void {
     this.elapsedMs += deltaMs;
+    const minutes = this.elapsedMs / 60_000;
+    this.difficultyTier = Math.floor(minutes);
 
-    const newTier = Math.floor(this.elapsedMs / DIFFICULTY_INTERVAL_MS);
-    if (newTier > this.difficultyTier) {
-      this.difficultyTier = newTier;
-      this.hpMultiplier = 1 + this.difficultyTier * DIFFICULTY_HP_MULT;
-      this.speedMultiplier = 1 + this.difficultyTier * DIFFICULTY_SPEED_MULT;
-      this.spawnDelayMultiplier = Math.pow(DIFFICULTY_SPAWN_MULT, this.difficultyTier);
-    }
+    // Exponential curve: gentle first 5 min, steep after 10 min
+    this.hpMultiplier = 1 + Math.pow(minutes / 5, 2) * 0.5;
+    this.speedMultiplier = 1 + Math.pow(minutes / 10, 1.5) * 0.25;
+    this.spawnDelayMultiplier = Math.max(0.1, 1 - Math.pow(minutes / 18, 2));
   }
 
   getElapsedFormatted(): string {

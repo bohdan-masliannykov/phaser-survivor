@@ -15,7 +15,7 @@ export class Slime extends Enemy {
         offsetYPercent: 0.45,
       },
       {
-        maxHealth: 10,
+        maxHealth: 6,
         barWidth: 24,
         barHeight: 3,
         barOffsetY: 18,

@@ -27,10 +27,10 @@ export abstract class Weapon {
     this.maxDamage = Math.round(this.maxDamage * multiplier);
   }
 
-  reduceCooldown(multiplier: number): void {
-    this.cooldownMs = Math.round(this.cooldownMs * multiplier);
+  reduceCooldown(multiplier: number, minCooldown: number = 200): void {
+    this.cooldownMs = Math.max(minCooldown, Math.round(this.cooldownMs * multiplier));
   }
 
-  abstract attack(target: Enemy, player: Player): void;
+  abstract attack(target: Enemy, player: Player, allEnemies?: Enemy[]): void;
   abstract updateAttack(player: Player, enemies: Enemy[]): void;
 }

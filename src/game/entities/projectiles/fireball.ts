@@ -19,7 +19,7 @@ export class Fireball extends Projectile {
     direction: { x: number; y: number },
     pierce: number = 1
   ) {
-    super(scene, x, y, direction, 150, 8000);
+    super(scene, x, y, direction, 250, 8000);
     this.pierce = pierce;
     const dx = direction.x;
     const dy = direction.y;
@@ -27,7 +27,7 @@ export class Fireball extends Projectile {
     this.rotation = angle;
 
     this.setTexture('fireball');
-    this.setScale(2.5);
+    this.setScale(1.5);
     this.setDepth(5);
 
     this.play('fireball_launch');

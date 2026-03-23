@@ -38,17 +38,22 @@ export abstract class Enemy extends GameObject {
     this.play(this.animations.walk);
   }
 
-  private static readonly SEPARATION_RADIUS = 24;
-  private static readonly SEPARATION_FORCE = 0.6;
+  private static readonly SEPARATION_RADIUS = 30;
+  private static readonly SEPARATION_FORCE = 0.4;
   private static readonly FLIP_DEAD_ZONE = 5;
   private static readonly _moveVec = { x: 0, y: 0 };
+
+  // Lateral wobble — each enemy gets unique phase & frequency
+  private wobblePhase = Math.random() * Math.PI * 2;
+  private wobbleSpeed = 2.5 + Math.random() * 1.5; // 2.5-4 Hz
+  private static readonly WOBBLE_STRENGTH = 0.35;
 
   update(targetX: number, targetY: number, allEnemies: Enemy[]): void {
     const dx = targetX - this.x;
     const dy = targetY - this.y;
     const seekLen = Math.sqrt(dx * dx + dy * dy) || 1;
 
-    // Gentle separation — only pushes apart when bodies overlap heavily
+    // Separation
     let sepX = 0;
     let sepY = 0;
     const r2 =
@@ -66,11 +71,16 @@ export abstract class Enemy extends GameObject {
       }
     }
 
-    Enemy._moveVec.x = dx / seekLen + sepX * Enemy.SEPARATION_FORCE;
-    Enemy._moveVec.y = dy / seekLen + sepY * Enemy.SEPARATION_FORCE;
+    // Lateral wobble perpendicular to seek direction
+    const time = this.scene.time.now / 1000;
+    const wobble = Math.sin(time * this.wobbleSpeed + this.wobblePhase) * Enemy.WOBBLE_STRENGTH;
+    // Perpendicular to (dx, dy) is (-dy, dx)
+    const perpX = -dy / seekLen;
+    const perpY = dx / seekLen;
 
-    // Only flip facing when clearly to the left/right — avoids
-    // oscillation when the enemy is directly on top of the player.
+    Enemy._moveVec.x = dx / seekLen + sepX * Enemy.SEPARATION_FORCE + perpX * wobble;
+    Enemy._moveVec.y = dy / seekLen + sepY * Enemy.SEPARATION_FORCE + perpY * wobble;
+
     if (Math.abs(dx) > Enemy.FLIP_DEAD_ZONE) {
       this.setFacingDirection(dx < 0);
     }

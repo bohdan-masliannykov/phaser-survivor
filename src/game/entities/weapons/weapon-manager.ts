@@ -24,10 +24,10 @@ export class WeaponManager {
     return false;
   }
 
-  tryAttack(nearestEnemy: Enemy | undefined, player: Player): void {
+  tryAttack(nearestEnemy: Enemy | undefined, player: Player, allEnemies?: Enemy[]): void {
     if (!nearestEnemy) return;
     this.weapons.forEach((weapon) => {
-      weapon.attack(nearestEnemy, player);
+      weapon.attack(nearestEnemy, player, allEnemies);
     });
   }
 

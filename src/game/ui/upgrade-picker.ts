@@ -1,5 +1,6 @@
 import type { Player } from '@entities/player/player';
 import type { FireWand } from '@entities/weapons/fire-wand';
+import type { Bow } from '@entities/weapons/bow';
 import type { Sword } from '@entities/weapons/sword';
 import type { Aura } from '@entities/weapons/aura';
 
@@ -12,7 +13,14 @@ export interface UpgradeOption {
   apply: (player: Player) => void;
 }
 
+const MIN_COOLDOWN_MS = 400;
+
+const hasRangedWeapon = (player: Player) =>
+  !!player.weaponManager.getWeapon('fire-wand') ||
+  !!player.weaponManager.getWeapon('bow');
+
 const ALL_UPGRADES: UpgradeOption[] = [
+  // ── Universal upgrades ──────────────────────────────
   {
     id: 'damage_up',
     name: 'Damage Up',
@@ -28,58 +36,86 @@ const ALL_UPGRADES: UpgradeOption[] = [
   {
     id: 'speed_up',
     name: 'Speed Up',
-    description: '+15% move speed',
+    description: '+10% move speed',
     color: 0x44aaff,
     canApply: () => true,
     apply: (player) => {
-      player.speed = Math.round(player.speed * 1.15);
+      player.speed = Math.round(player.speed * 1.1);
     },
   },
   {
     id: 'max_hp',
     name: 'Max HP Up',
-    description: '+25 max HP, full heal',
+    description: '+25 max HP',
     color: 0x44ff44,
     canApply: () => true,
     apply: (player) => {
       player.maxHealth += 25;
-      player.heal(player.maxHealth);
+      player.heal(25);
+    },
+  },
+  {
+    id: 'heal',
+    name: 'Heal',
+    description: 'Restore 30% HP',
+    color: 0x66ff66,
+    canApply: (player) => player.health < player.maxHealth,
+    apply: (player) => {
+      player.heal(Math.round(player.maxHealth * 0.3));
     },
   },
   {
     id: 'cooldown_down',
     name: 'Cooldown Down',
-    description: '-15% weapon cooldown',
+    description: '-10% weapon cooldown',
     color: 0xffaa44,
     canApply: () => true,
     apply: (player) => {
       for (const weapon of player.weaponManager.getAllWeapons()) {
-        weapon.reduceCooldown(0.85);
+        weapon.reduceCooldown(0.9, MIN_COOLDOWN_MS);
       }
     },
   },
   {
+    id: 'pickup_range',
+    name: 'Magnet',
+    description: '+30% gem pickup range',
+    color: 0x88ffaa,
+    canApply: () => true,
+    apply: (player) => {
+      player.pickupRadiusMultiplier = (player.pickupRadiusMultiplier ?? 1) * 1.3;
+    },
+  },
+
+  // ── Projectile upgrades (fire-wand & bow) ───────────
+  {
     id: 'extra_projectile',
     name: 'Extra Projectile',
-    description: '+1 fireball projectile',
+    description: '+1 projectile',
     color: 0xff8800,
-    canApply: (player) => !!player.weaponManager.getWeapon('fire-wand'),
+    canApply: hasRangedWeapon,
     apply: (player) => {
       const wand = player.weaponManager.getWeapon('fire-wand') as FireWand | undefined;
+      const bow = player.weaponManager.getWeapon('bow') as Bow | undefined;
       if (wand) wand.addProjectile();
+      if (bow) bow.addProjectile();
     },
   },
   {
     id: 'pierce_up',
     name: 'Pierce Up',
-    description: '+1 fireball pierce',
+    description: '+1 pierce',
     color: 0xcc44ff,
-    canApply: (player) => !!player.weaponManager.getWeapon('fire-wand'),
+    canApply: hasRangedWeapon,
     apply: (player) => {
       const wand = player.weaponManager.getWeapon('fire-wand') as FireWand | undefined;
+      const bow = player.weaponManager.getWeapon('bow') as Bow | undefined;
       if (wand) wand.addPierce();
+      if (bow) bow.addPierce();
     },
   },
+
+  // ── Sword upgrades ──────────────────────────────────
   {
     id: 'aoe_up',
     name: 'Slash Range Up',
@@ -91,20 +127,12 @@ const ALL_UPGRADES: UpgradeOption[] = [
       if (sword) sword.increaseRadius(1.2);
     },
   },
-  {
-    id: 'pickup_range',
-    name: 'Magnet',
-    description: '+40% gem pickup range',
-    color: 0x88ffaa,
-    canApply: () => true,
-    apply: (player) => {
-      player.pickupRadiusMultiplier = (player.pickupRadiusMultiplier ?? 1) * 1.4;
-    },
-  },
+
+  // ── Aura upgrades ──────────────────────────────────
   {
     id: 'aura_radius',
     name: 'Aura Radius',
-    description: '+20% aura radius',
+    description: '+20px aura radius',
     color: 0xffaa88,
     canApply: (player) => !!player.weaponManager.getWeapon('aura'),
     apply: (player) => {

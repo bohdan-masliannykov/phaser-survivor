@@ -64,7 +64,7 @@ export class Aura extends Weapon {
     this.auraRadius += 20;
   }
 
-  attack(_: Enemy, player: Player): void {
+  attack(_: Enemy, _player: Player): void {
     // Aura doesn't have discrete attacks, it's continuous
     // This method is called but we handle damage in updateAttack
   }

@@ -11,10 +11,10 @@ import { UpgradePicker } from '@ui/upgrade-picker';
 import { GameOverScreen } from '@ui/game-over-screen';
 import {
   type PLAYER,
-  XP_PER_ENEMY,
   XP_GEM_PICKUP_RADIUS,
   ENEMY_CONTACT_DAMAGE,
   ENEMY_CONTACT_COOLDOWN_MS,
+  AUTO_FIRE_RANGE,
 } from '@constants';
 
 export class GameScene extends Phaser.Scene {
@@ -55,8 +55,8 @@ export class GameScene extends Phaser.Scene {
     this.progression = new ProgressionSystem(() => this.onLevelUp());
 
     // Enemy manager with gem drop callback
-    this.enemyManager = new EnemyManager(this, (x, y, enemyType) => {
-      const xpValue = XP_PER_ENEMY[enemyType] ?? 1;
+    this.enemyManager = new EnemyManager(this, (x, y) => {
+      const xpValue = this.rollGemTier();
       this.gemPool.spawn(x, y, xpValue);
       this.progression.addKill();
     });
@@ -126,11 +126,11 @@ export class GameScene extends Phaser.Scene {
         this.player.x,
         this.player.y,
         enemies,
-        600
+        AUTO_FIRE_RANGE
       );
 
       if (nearest?.active && nearest?.visible) {
-        this.player.weaponManager.tryAttack(nearest, this.player);
+        this.player.weaponManager.tryAttack(nearest, this.player, enemies);
       }
     }
 
@@ -225,6 +225,26 @@ export class GameScene extends Phaser.Scene {
       this.physics.resume();
       this.enemyManager.resumeSpawning();
     });
+  }
+
+  /**
+   * Roll gem XP tier based on elapsed time.
+   * Early game: mostly green (1 XP). Over time blue (2) and red (5) appear more.
+   */
+  private rollGemTier(): number {
+    const minutes = this.progression.elapsedMs / 60_000;
+
+    // Green chance starts at 95%, decays to ~40% by minute 15
+    // Blue chance starts at 4%, grows to ~35%
+    // Red chance starts at 1%, grows to ~25%
+    const greenChance = Math.max(0.4, 0.95 - minutes * 0.037);
+    const redChance = Math.min(0.25, 0.01 + minutes * 0.016);
+    const blueChance = 1 - greenChance - redChance;
+
+    const roll = Math.random();
+    if (roll < greenChance) return 1;
+    if (roll < greenChance + blueChance) return 2;
+    return 5;
   }
 
   private handleGameOver(): void {

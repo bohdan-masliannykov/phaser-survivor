@@ -1,4 +1,5 @@
 import { ENEMY, PLAYER } from '@constants';
+import { generateTerrainTextures } from '@entities/environment/terrain-textures';
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -26,7 +27,9 @@ export class PreloadScene extends Phaser.Scene {
     });
 
     this.load.image('arrow', '/assets/arrow.png');
-    this.load.image('grass', '/assets/grass.png');
+    this.load.image('xp-gem-green', '/assets/xp-gem-green.png');
+    this.load.image('xp-gem-blue', '/assets/xp-gem-blue.png');
+    this.load.image('xp-gem-red', '/assets/xp-gem-red.png');
   }
 
   create(): void {
@@ -41,6 +44,21 @@ export class PreloadScene extends Phaser.Scene {
     g.fillCircle(4, 4, 4);
     g.generateTexture('projectile', 8, 8);
     g.destroy();
+
+    // Soft glow circle for gem aura
+    const glow = this.make.graphics({ x: 0, y: 0 });
+    const glowSize = 32;
+    const half = glowSize / 2;
+    for (let r = half; r > 0; r--) {
+      const alpha = 0.3 * (r / half);
+      glow.fillStyle(0xffffff, alpha);
+      glow.fillCircle(half, half, r);
+    }
+    glow.generateTexture('glow', glowSize, glowSize);
+    glow.destroy();
+
+    // Generate procedural terrain textures (ground, trees, rocks, etc.)
+    generateTerrainTextures(this);
 
     this.anims.create({
       key: 'fireball_launch',

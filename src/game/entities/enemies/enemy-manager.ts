@@ -79,8 +79,30 @@ export class EnemyManager {
         break;
     }
 
-    // Acquire an enemy from the pool
-    return this.enemyPool.acquire(x, y);
+    // Roll enemy type based on elapsed time
+    const type = this.rollEnemyType();
+    return this.enemyPool.acquire(x, y, type);
+  }
+
+  /**
+   * Weighted enemy type selection based on elapsed time.
+   * Min 0-1: 100% slimes
+   * Min 1-3: skeletons start appearing (~10%)
+   * Min 3+: orcs start appearing, skeletons increase, slimes decrease
+   */
+  private rollEnemyType(): keyof typeof ENEMY {
+    const minutes = this.scene.progression.elapsedMs / 60_000;
+
+    if (minutes < 1) return 'slime';
+
+    const skeletonChance = Math.min(0.35, (minutes - 1) * 0.05);
+    const orcChance = minutes < 3 ? 0 : Math.min(0.25, (minutes - 3) * 0.03);
+    const slimeChance = 1 - skeletonChance - orcChance;
+
+    const roll = Math.random();
+    if (roll < slimeChance) return 'slime';
+    if (roll < slimeChance + skeletonChance) return 'skeleton';
+    return 'orc';
   }
 
   /**

@@ -89,24 +89,24 @@ export class EnemyPool {
    * Get an enemy from the pool and activate it at a specific position
    * Returns null if pool is exhausted
    */
-  public acquire(x: number, y: number): Enemy | null {
-    // If no available enemies, we could:
-    // 1. Create new ones (but limit by maxSize)
-    // 2. Recycle oldest active enemy
-    // 3. Return null (don't spawn)
-
+  public acquire(x: number, y: number, preferredType?: keyof typeof ENEMY): Enemy | null {
     let enemy: Enemy;
 
-    if (this.availableEnemies.length > 0) {
-      enemy = this.availableEnemies.pop()!;
+    // Find a matching type in the pool, or fall back to any available
+    const matchIdx = preferredType
+      ? this.availableEnemies.findIndex((e) => e.texture.key === preferredType)
+      : -1;
+
+    if (matchIdx >= 0) {
+      enemy = this.availableEnemies.splice(matchIdx, 1)[0];
       enemy.restore(x, y);
     } else if (this.allEnemies.length < this.poolConfig.maxSize) {
-      const randomType =
+      const type = preferredType ??
         this.poolConfig.enemyTypes[
           Math.floor(Math.random() * this.poolConfig.enemyTypes.length)
         ];
 
-      enemy = EnemyFactory.createEnemyByType(this.scene, x, y, randomType);
+      enemy = EnemyFactory.createEnemyByType(this.scene, x, y, type);
       this.allEnemies.push(enemy);
       this.enemiesGroup.add(enemy);
 

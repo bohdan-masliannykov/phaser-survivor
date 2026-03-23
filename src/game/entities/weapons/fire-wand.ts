@@ -2,7 +2,7 @@ import type { Enemy } from '@entities/enemies/enemy';
 import { Weapon } from './weapon';
 import { Fireball } from '@entities/projectiles/fireball';
 import type { Player } from '@entities/player/player';
-import { PROJECTILE_HIT_RADIUS } from '@constants';
+import { PROJECTILE_HIT_RADIUS, AUTO_FIRE_RANGE } from '@constants';
 
 interface FireWandStats {
   minDamage: number;
@@ -42,45 +42,71 @@ export class FireWand extends Weapon {
     this.basePierce++;
   }
 
-  attack(nearestEnemy: Enemy, player: Player): void {
+  attack(nearestEnemy: Enemy, player: Player, allEnemies?: Enemy[]): void {
     if (!this.isOffCooldown(player.scene.time.now)) {
       return;
     }
     this.updateCooldown(player.scene.time.now);
 
-    const numProjectiles = this.projectileCount;
-    if (numProjectiles === 1) {
-      const dx = nearestEnemy.x - player.x;
-      const dy = nearestEnemy.y - player.y;
+    // Sort enemies by distance and pick unique targets for each projectile
+    const targets = this.pickTargets(player, nearestEnemy, allEnemies ?? []);
+
+    for (const target of targets) {
+      const dx = target.x - player.x;
+      const dy = target.y - player.y;
       const length = Math.sqrt(dx * dx + dy * dy) || 1;
       const velocity = { x: dx / length, y: dy / length };
       this.projectiles.push(
-        new Fireball(nearestEnemy.scene, player.x, player.y, velocity, this.basePierce)
+        new Fireball(target.scene, player.x, player.y, velocity, this.basePierce)
       );
-    } else {
-      // Spread shot
-      const minSpread = Phaser.Math.DegToRad(25);
-      const maxSpread = Phaser.Math.DegToRad(50);
-      const totalSpread = Phaser.Math.Linear(
-        minSpread,
-        maxSpread,
-        (numProjectiles - 3) / (10 - 3)
-      );
-      const baseAngle = Math.atan2(
-        nearestEnemy.y - player.y,
-        nearestEnemy.x - player.x
-      );
-      const startAngle = baseAngle - totalSpread / 2;
-      const angleStep = totalSpread / (numProjectiles - 1);
-
-      for (let i = 0; i < numProjectiles; i++) {
-        const angle = startAngle + i * angleStep;
-        const velocity = { x: Math.cos(angle), y: Math.sin(angle) };
-        this.projectiles.push(
-          new Fireball(nearestEnemy.scene, player.x, player.y, velocity, this.basePierce)
-        );
-      }
     }
+  }
+
+  /**
+   * Pick up to projectileCount different targets.
+   * If fewer enemies than projectiles, remaining fire in random directions.
+   */
+  private pickTargets(
+    player: Player,
+    nearest: Enemy,
+    allEnemies: Enemy[]
+  ): { x: number; y: number; scene: Phaser.Scene }[] {
+    const maxRange = AUTO_FIRE_RANGE;
+    const targets: { x: number; y: number; scene: Phaser.Scene }[] = [];
+
+    if (this.projectileCount === 1) {
+      targets.push(nearest);
+      return targets;
+    }
+
+    // Sort by distance, pick closest N unique enemies
+    const sorted = allEnemies
+      .filter((e) => e.active && e.visible && !e.isDead())
+      .map((e) => {
+        const dx = e.x - player.x;
+        const dy = e.y - player.y;
+        return { enemy: e, dist2: dx * dx + dy * dy };
+      })
+      .filter((e) => e.dist2 <= maxRange * maxRange)
+      .sort((a, b) => a.dist2 - b.dist2)
+      .slice(0, this.projectileCount);
+
+    for (const { enemy } of sorted) {
+      targets.push(enemy);
+    }
+
+    // Fill remaining projectiles with random directions
+    const remaining = this.projectileCount - targets.length;
+    for (let i = 0; i < remaining; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      targets.push({
+        x: player.x + Math.cos(angle) * 200,
+        y: player.y + Math.sin(angle) * 200,
+        scene: player.scene,
+      });
+    }
+
+    return targets;
   }
 
   updateAttack(_: Player, enemies: Enemy[]): void {
