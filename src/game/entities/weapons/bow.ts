@@ -4,16 +4,34 @@ import { Arrow } from '@entities/projectiles/arrow';
 import type { Player } from '@entities/player/player';
 import { PROJECTILE_HIT_RADIUS } from '@constants';
 
+interface BowStats {
+  minDamage: number;
+  maxDamage: number;
+  cooldownMs: number;
+  projectileCount?: number;
+  basePierce?: number;
+}
+
 export class Bow extends Weapon {
   projectiles: Arrow[] = [];
   basePierce: number = 1;
 
-  constructor() {
+  constructor(stats?: BowStats) {
     super();
-    this.projectileCount = 1;
-    this.minDamage = 6;
-    this.maxDamage = 12;
-    this.cooldownMs = 1200;
+    if (stats) {
+      this.minDamage = stats.minDamage;
+      this.maxDamage = stats.maxDamage;
+      this.cooldownMs = stats.cooldownMs;
+      this.projectileCount = stats.projectileCount ?? 1;
+      this.basePierce = stats.basePierce ?? 1;
+    } else {
+      // Defaults
+      this.projectileCount = 1;
+      this.minDamage = 6;
+      this.maxDamage = 12;
+      this.cooldownMs = 1200;
+      this.basePierce = 1;
+    }
   }
 
   addProjectile(): void {

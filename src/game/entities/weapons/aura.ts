@@ -1,19 +1,37 @@
 import type { Enemy } from '@entities/enemies/enemy';
 import { Weapon } from './weapon';
 import type { Player } from '@entities/player/player';
-import { AURA_RADIUS, AURA_DAMAGE_INTERVAL_MS } from '@constants';
+
+interface AuraStats {
+  minDamage: number;
+  maxDamage: number;
+  cooldownMs: number;
+  radius: number;
+  damageIntervalMs: number;
+}
 
 export class Aura extends Weapon {
-  auraRadius: number = AURA_RADIUS;
+  auraRadius: number;
   lastDamageTime: number = 0;
-  damageTickIntervalMs: number = AURA_DAMAGE_INTERVAL_MS;
+  damageTickIntervalMs: number;
   private auraGraphics?: Phaser.GameObjects.Graphics;
 
-  constructor() {
+  constructor(stats?: AuraStats) {
     super();
-    this.minDamage = 4;
-    this.maxDamage = 8;
-    this.cooldownMs = 0; // Aura is continuous
+    if (stats) {
+      this.minDamage = stats.minDamage;
+      this.maxDamage = stats.maxDamage;
+      this.cooldownMs = stats.cooldownMs;
+      this.auraRadius = stats.radius;
+      this.damageTickIntervalMs = stats.damageIntervalMs;
+    } else {
+      // Defaults
+      this.minDamage = 2;
+      this.maxDamage = 4;
+      this.cooldownMs = 0;
+      this.auraRadius = 60;
+      this.damageTickIntervalMs = 600;
+    }
   }
 
   initializeVisuals(scene: Phaser.Scene): void {
@@ -73,7 +91,7 @@ export class Aura extends Weapon {
       const distSquared = dx * dx + dy * dy;
 
       if (distSquared <= radiusSquared) {
-        enemy.receiveDamage(this.getDamage(), player.x, player.y, 5);
+        enemy.receiveDamage(this.getDamage(), player.x, player.y, 5, 'burn');
       }
     }
   }

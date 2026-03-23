@@ -22,6 +22,6 @@ export class Archer extends Player {
       }
     );
 
-    this.weaponManager.addWeapon('bow', new Bow());
+    this.weaponManager.addWeapon('bow', new Bow(PLAYER.archer.weaponStats as any));
   }
 }

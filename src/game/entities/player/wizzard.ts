@@ -22,6 +22,6 @@ export class Wizzard extends Player {
       }
     );
 
-    this.weaponManager.addWeapon('fire-wand', new FireWand());
+    this.weaponManager.addWeapon('fire-wand', new FireWand(PLAYER.wizzard.weaponStats as any));
   }
 }

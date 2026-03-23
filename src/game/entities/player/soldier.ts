@@ -22,6 +22,6 @@ export class Soldier extends Player {
       }
     );
 
-    this.weaponManager.addWeapon('sword', new Sword());
+    this.weaponManager.addWeapon('sword', new Sword(PLAYER.soldier.weaponStats as any));
   }
 }

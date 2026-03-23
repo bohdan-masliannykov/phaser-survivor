@@ -82,13 +82,47 @@ export abstract class Enemy extends GameObject {
     amount: number,
     fromX: number,
     fromY: number,
-    knockbackForce: number
+    knockbackForce: number,
+    effectType?: 'default' | 'burn'
   ): void {
     this.takeDamage(amount);
     this.applyKnockback(fromX, fromY, knockbackForce);
+
+    if (effectType === 'burn') {
+      this.showBurnEffect();
+    } else {
+      this.showDamageFlash();
+    }
+
     if (this.isDead()) {
       this.releaseObjectWithAnimation(undefined, () => this.onDeath?.());
     }
+  }
+
+  private showDamageFlash(): void {
+    const originalTint = this.tint;
+    this.setTint(0xffffff); // Flash white
+    this.scene.tweens.add({
+      targets: this,
+      tint: originalTint,
+      duration: 100,
+      onComplete: () => {
+        this.setTint(originalTint);
+      },
+    });
+  }
+
+  private showBurnEffect(): void {
+    this.setTint(0xff6644); // Flash orange/red for burn
+    this.scene.tweens.add({
+      targets: this,
+      tint: 0xffffff,
+      duration: 150,
+      delay: 0,
+      onComplete: () => {
+        this.setTint(0xffffff);
+      },
+    });
   }
 
   restore(x: number, y: number): void {

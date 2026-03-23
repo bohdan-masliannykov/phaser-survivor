@@ -4,16 +4,34 @@ import { Fireball } from '@entities/projectiles/fireball';
 import type { Player } from '@entities/player/player';
 import { PROJECTILE_HIT_RADIUS } from '@constants';
 
+interface FireWandStats {
+  minDamage: number;
+  maxDamage: number;
+  cooldownMs: number;
+  projectileCount?: number;
+  basePierce?: number;
+}
+
 export class FireWand extends Weapon {
   projectiles: Fireball[] = [];
   basePierce: number = 1;
 
-  constructor() {
+  constructor(stats?: FireWandStats) {
     super();
-    this.projectileCount = 3;
-    this.minDamage = 8;
-    this.maxDamage = 15;
-    this.cooldownMs = 2400;
+    if (stats) {
+      this.minDamage = stats.minDamage;
+      this.maxDamage = stats.maxDamage;
+      this.cooldownMs = stats.cooldownMs;
+      this.projectileCount = stats.projectileCount ?? 1;
+      this.basePierce = stats.basePierce ?? 1;
+    } else {
+      // Defaults
+      this.projectileCount = 1;
+      this.minDamage = 6;
+      this.maxDamage = 12;
+      this.cooldownMs = 500;
+      this.basePierce = 1;
+    }
   }
 
   addProjectile(): void {

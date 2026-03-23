@@ -6,7 +6,6 @@ export const SPRITE_SCALE = 2.5; // scaling factor for sprites
 export const ENEMY_SPAWN_INTERVAL_MS = 1000; // milliseconds
 export const SPAWN_MARGIN = 40; // pixels outside of view
 
-export const FIRE_INTERVAL_MS = 500; // auto-shot cadence
 export const PROJECTILE_SPEED = 450; // pixels per second
 export const PROJECTILE_LIFETIME_MS = 900; // despawn after this time
 export const PROJECTILE_HIT_RADIUS = 18; // simple distance-based collision
@@ -41,13 +40,6 @@ export const XP_THRESHOLDS = [
   640, 740, 850, 970, 1100,
 ]; // XP needed to reach level 2, 3, 4, ...
 
-// Sword AoE
-export const SWORD_RADIUS = 80; // px around player
-export const SWORD_SLASH_DURATION = 300; // visual duration ms
-
-// Priest Aura
-export const AURA_RADIUS = 120; // px around priest
-export const AURA_DAMAGE_INTERVAL_MS = 400; // tick interval
 
 // Difficulty scaling
 export const DIFFICULTY_INTERVAL_MS = 60_000; // scale every 60s
@@ -141,6 +133,7 @@ export const ENEMY = {
 export const PLAYER = {
   soldier: {
     key: 'soldier',
+    weapon: 'sword',
     animations: {
       idle: {
         key: 'soldier-idle',
@@ -161,9 +154,17 @@ export const PLAYER = {
         repeat: 0,
       },
     },
+    weaponStats: {
+      minDamage: 8,
+      maxDamage: 12,
+      cooldownMs: 300,
+      radius: 80,
+      slashDuration: 300,
+    },
   },
   wizzard: {
     key: 'wizzard',
+    weapon: 'fire-wand',
     animations: {
       idle: {
         key: 'wizzard-idle',
@@ -184,9 +185,17 @@ export const PLAYER = {
         repeat: 0,
       },
     },
+    weaponStats: {
+      minDamage: 6,
+      maxDamage: 12,
+      cooldownMs: 500,
+      projectileCount: 1,
+      basePierce: 1,
+    },
   },
   archer: {
     key: 'archer',
+    weapon: 'bow',
     animations: {
       idle: {
         key: 'archer-idle',
@@ -207,9 +216,17 @@ export const PLAYER = {
         repeat: 0,
       },
     },
+    weaponStats: {
+      minDamage: 6,
+      maxDamage: 12,
+      cooldownMs: 1200,
+      projectileCount: 1,
+      basePierce: 1,
+    },
   },
   priest: {
     key: 'priest',
+    weapon: 'aura',
     animations: {
       idle: {
         key: 'priest-idle',
@@ -229,6 +246,13 @@ export const PLAYER = {
         frameRate: 14,
         repeat: 0,
       },
+    },
+    weaponStats: {
+      minDamage: 2,
+      maxDamage: 4,
+      cooldownMs: 0,
+      radius: 60,
+      damageIntervalMs: 600,
     },
   },
 };

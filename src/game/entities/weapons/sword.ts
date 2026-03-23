@@ -1,17 +1,36 @@
 import type { Enemy } from '@entities/enemies/enemy';
 import { Weapon } from './weapon';
 import type { Player } from '@entities/player/player';
-import { SWORD_RADIUS, SWORD_SLASH_DURATION } from '@constants';
+
+interface SwordStats {
+  minDamage: number;
+  maxDamage: number;
+  cooldownMs: number;
+  radius: number;
+  slashDuration: number;
+}
 
 export class Sword extends Weapon {
-  private radius: number = SWORD_RADIUS;
+  private radius: number;
+  private slashDuration: number;
   private slashGraphics: Phaser.GameObjects.Graphics | null = null;
 
-  constructor() {
+  constructor(stats?: SwordStats) {
     super();
-    this.minDamage = 8;
-    this.maxDamage = 15;
-    this.cooldownMs = 1200;
+    if (stats) {
+      this.minDamage = stats.minDamage;
+      this.maxDamage = stats.maxDamage;
+      this.cooldownMs = stats.cooldownMs;
+      this.radius = stats.radius;
+      this.slashDuration = stats.slashDuration;
+    } else {
+      // Defaults
+      this.minDamage = 8;
+      this.maxDamage = 12;
+      this.cooldownMs = 300;
+      this.radius = 80;
+      this.slashDuration = 300;
+    }
   }
 
   increaseRadius(multiplier: number): void {
@@ -50,7 +69,7 @@ export class Sword extends Weapon {
 
     // Draw rotating arc
     let elapsed = 0;
-    const duration = SWORD_SLASH_DURATION;
+    const duration = this.slashDuration;
     const update = (_event: Phaser.Time.TimerEvent, delta: number) => {
       elapsed += delta;
       const progress = elapsed / duration;
