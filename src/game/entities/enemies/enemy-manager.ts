@@ -119,20 +119,6 @@ export class EnemyManager {
     }
   }
 
-  /**
-   * Remove an enemy (return it to the pool)
-   */
-  removeEnemy(enemy: Enemy): void {
-    this.enemyPool.release(enemy);
-  }
-
-  /**
-   * Get pool statistics for debugging
-   */
-  getPoolStats() {
-    return this.enemyPool.getPoolStats();
-  }
-
   pauseSpawning(): void {
     if (this.spawnTimer) this.spawnTimer.paused = true;
   }
