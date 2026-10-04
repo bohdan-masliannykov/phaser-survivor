@@ -1,112 +1,31 @@
-import { type CharacterKey, PLAYER } from '@constants';
+import { type CharacterDef, PLAYER } from '@constants';
 
-interface CharacterInfo {
-  key: CharacterKey;
-  name: string;
-  description: string;
-  stats: {
-    damage: string;
-    speed: string;
-    range: string;
-  };
-}
+const CARD_WIDTH = 300;
+const CARD_HEIGHT = 400;
+const CARD_GAP = 30;
+const SCREEN_MARGIN = 30;
+const FONT = 'monospace';
 
-const CHARACTERS: CharacterInfo[] = [
-  {
-    key: PLAYER.soldier.key,
-    name: 'Soldier',
-    description: 'Swift melee fighter with spinning slash',
-    stats: {
-      damage: '⭐⭐⭐',
-      speed: '⭐⭐⭐',
-      range: '⭐',
-    },
-  },
-  {
-    key: PLAYER.wizzard.key,
-    name: 'Wizard',
-    description: 'Ranged spellcaster with piercing fireballs',
-    stats: {
-      damage: '⭐⭐⭐',
-      speed: '⭐⭐',
-      range: '⭐⭐⭐',
-    },
-  },
-  {
-    key: PLAYER.archer.key,
-    name: 'Archer',
-    description: 'Precise archer with rapid arrows',
-    stats: {
-      damage: '⭐⭐',
-      speed: '⭐⭐⭐',
-      range: '⭐⭐⭐',
-    },
-  },
-  {
-    key: PLAYER.armoredAxeman.key,
-    name: 'Armored Axeman',
-    description: 'Heavy armored warrior with devastating cleave',
-    stats: {
-      damage: '⭐⭐⭐⭐',
-      speed: '⭐⭐',
-      range: '⭐',
-    },
-  },
-  {
-    key: PLAYER.priest.key,
-    name: 'Priest',
-    description: 'Holy aura dealer with damage over time',
-    stats: {
-      damage: '⭐⭐',
-      speed: '⭐⭐',
-      range: '⭐⭐',
-    },
-  },
-];
+const RATINGS = [
+  { label: 'DMG', stat: 'damage', color: '#ffaa44', offsetX: -80 },
+  { label: 'SPD', stat: 'speed', color: '#44aaff', offsetX: 0 },
+  { label: 'RNG', stat: 'range', color: '#44ff44', offsetX: 80 },
+] as const;
 
 export class CharacterSelectionScene extends Phaser.Scene {
   constructor() {
     super({ key: 'CharacterSelectionScene' });
   }
 
-  preload(): void {
-    // Load spritesheets if not already loaded (should be from PreloadScene, but just in case)
-    this.load.spritesheet(PLAYER.soldier.key, `/assets/${PLAYER.soldier.key}.png`, {
-      frameWidth: 100,
-      frameHeight: 100,
-    });
-    this.load.spritesheet(PLAYER.wizzard.key, `/assets/${PLAYER.wizzard.key}.png`, {
-      frameWidth: 100,
-      frameHeight: 100,
-    });
-    this.load.spritesheet(PLAYER.archer.key, `/assets/${PLAYER.archer.key}.png`, {
-      frameWidth: 100,
-      frameHeight: 100,
-    });
-    this.load.spritesheet(PLAYER.armoredAxeman.key, `/assets/${PLAYER.armoredAxeman.key}.png`, {
-      frameWidth: 100,
-      frameHeight: 100,
-    });
-    this.load.spritesheet(PLAYER.priest.key, `/assets/${PLAYER.priest.key}.png`, {
-      frameWidth: 100,
-      frameHeight: 100,
-    });
-  }
-
   create(): void {
-    // Background
-    this.add
-      .rectangle(0, 0, this.scale.width, this.scale.height, 0x1a1a2e)
-      .setOrigin(0, 0)
-      .setDepth(0);
+    const characters = Object.values(PLAYER);
+    const { width, height } = this.scale;
 
-    // Create animations for idle walk
-    this.createCharacterAnimations();
+    this.cameras.main.setBackgroundColor(0x1a1a2e);
 
-    // Title
     this.add
-      .text(this.scale.width / 2, 30, 'PHASER SURVIVOR', {
-        fontFamily: 'monospace',
+      .text(width / 2, 30, 'PHASER SURVIVOR', {
+        fontFamily: FONT,
         fontSize: '42px',
         color: '#ffdd44',
         stroke: '#000',
@@ -115,8 +34,8 @@ export class CharacterSelectionScene extends Phaser.Scene {
       .setOrigin(0.5, 0);
 
     this.add
-      .text(this.scale.width / 2, 80, 'Select Your Character', {
-        fontFamily: 'monospace',
+      .text(width / 2, 80, 'Select Your Character', {
+        fontFamily: FONT,
         fontSize: '20px',
         color: '#cccccc',
         stroke: '#000',
@@ -124,206 +43,50 @@ export class CharacterSelectionScene extends Phaser.Scene {
       })
       .setOrigin(0.5, 0);
 
-    // Character cards - side by side
-    const cardWidth = 300;
-    const gap = 30;
-    const totalWidth = cardWidth * CHARACTERS.length + gap * (CHARACTERS.length - 1);
-    const startX = (this.scale.width - totalWidth) / 2;
+    // Cards side by side, centred
+    const totalWidth = CARD_WIDTH * characters.length + CARD_GAP * (characters.length - 1);
+    const startX = (width - totalWidth) / 2;
 
-    CHARACTERS.forEach((char, index) => {
-      const cardX = startX + index * (cardWidth + gap) + cardWidth / 2;
-      const cardY = this.scale.height / 2 + 40;
-      this.drawCharacterCard(cardX, cardY, char);
+    characters.forEach((character, index) => {
+      const cardX = startX + index * (CARD_WIDTH + CARD_GAP) + CARD_WIDTH / 2;
+      this.drawCharacterCard(cardX, height / 2 + 40, character);
     });
+
+    // Zoom out when the row is wider than the window
+    this.cameras.main.setZoom(Math.min(1, width / (totalWidth + SCREEN_MARGIN * 2)));
   }
 
-  private createCharacterAnimations(): void {
-    // Soldier idle
-    if (!this.anims.exists('soldier-select-idle')) {
-      const soldierIdle = PLAYER.soldier.animations.idle;
-      this.anims.create({
-        key: 'soldier-select-idle',
-        frames: this.anims.generateFrameNumbers(PLAYER.soldier.key, {
-          start: soldierIdle.start,
-          end: soldierIdle.end,
-        }),
-        frameRate: 6,
-        repeat: -1,
-      });
-    }
+  private drawCharacterCard(x: number, y: number, character: CharacterDef): void {
+    const { card, animations } = character;
 
-    // Soldier walk
-    if (!this.anims.exists('soldier-select-walk')) {
-      const soldierWalk = PLAYER.soldier.animations.walk;
-      this.anims.create({
-        key: 'soldier-select-walk',
-        frames: this.anims.generateFrameNumbers(PLAYER.soldier.key, {
-          start: soldierWalk.start,
-          end: soldierWalk.end,
-        }),
-        frameRate: 10,
-        repeat: -1,
-      });
-    }
-
-    // Wizard idle
-    if (!this.anims.exists('wizzard-select-idle')) {
-      const wizardIdle = PLAYER.wizzard.animations.idle;
-      this.anims.create({
-        key: 'wizzard-select-idle',
-        frames: this.anims.generateFrameNumbers(PLAYER.wizzard.key, {
-          start: wizardIdle.start,
-          end: wizardIdle.end,
-        }),
-        frameRate: 6,
-        repeat: -1,
-      });
-    }
-
-    // Wizard walk
-    if (!this.anims.exists('wizzard-select-walk')) {
-      const wizardWalk = PLAYER.wizzard.animations.walk;
-      this.anims.create({
-        key: 'wizzard-select-walk',
-        frames: this.anims.generateFrameNumbers(PLAYER.wizzard.key, {
-          start: wizardWalk.start,
-          end: wizardWalk.end,
-        }),
-        frameRate: 10,
-        repeat: -1,
-      });
-    }
-
-    // Archer idle
-    if (!this.anims.exists('archer-select-idle')) {
-      const archerIdle = PLAYER.archer.animations.idle;
-      this.anims.create({
-        key: 'archer-select-idle',
-        frames: this.anims.generateFrameNumbers(PLAYER.archer.key, {
-          start: archerIdle.start,
-          end: archerIdle.end,
-        }),
-        frameRate: 6,
-        repeat: -1,
-      });
-    }
-
-    // Archer walk
-    if (!this.anims.exists('archer-select-walk')) {
-      const archerWalk = PLAYER.archer.animations.walk;
-      this.anims.create({
-        key: 'archer-select-walk',
-        frames: this.anims.generateFrameNumbers(PLAYER.archer.key, {
-          start: archerWalk.start,
-          end: archerWalk.end,
-        }),
-        frameRate: 10,
-        repeat: -1,
-      });
-    }
-
-    // Armored Axeman idle
-    if (!this.anims.exists('armored-axeman-select-idle')) {
-      const axemanIdle = PLAYER.armoredAxeman.animations.idle;
-      this.anims.create({
-        key: 'armored-axeman-select-idle',
-        frames: this.anims.generateFrameNumbers(PLAYER.armoredAxeman.key, {
-          start: axemanIdle.start,
-          end: axemanIdle.end,
-        }),
-        frameRate: 6,
-        repeat: -1,
-      });
-    }
-
-    // Armored Axeman walk
-    if (!this.anims.exists('armored-axeman-select-walk')) {
-      const axemanWalk = PLAYER.armoredAxeman.animations.walk;
-      this.anims.create({
-        key: 'armored-axeman-select-walk',
-        frames: this.anims.generateFrameNumbers(PLAYER.armoredAxeman.key, {
-          start: axemanWalk.start,
-          end: axemanWalk.end,
-        }),
-        frameRate: 10,
-        repeat: -1,
-      });
-    }
-
-    // Priest idle
-    if (!this.anims.exists('priest-select-idle')) {
-      const priestIdle = PLAYER.priest.animations.idle;
-      this.anims.create({
-        key: 'priest-select-idle',
-        frames: this.anims.generateFrameNumbers(PLAYER.priest.key, {
-          start: priestIdle.start,
-          end: priestIdle.end,
-        }),
-        frameRate: 6,
-        repeat: -1,
-      });
-    }
-
-    // Priest walk
-    if (!this.anims.exists('priest-select-walk')) {
-      const priestWalk = PLAYER.priest.animations.walk;
-      this.anims.create({
-        key: 'priest-select-walk',
-        frames: this.anims.generateFrameNumbers(PLAYER.priest.key, {
-          start: priestWalk.start,
-          end: priestWalk.end,
-        }),
-        frameRate: 10,
-        repeat: -1,
-      });
-    }
-  }
-
-  private drawCharacterCard(x: number, y: number, char: CharacterInfo): void {
-    const cardWidth = 300;
-    const cardHeight = 400;
-
-    // Card background
     const bg = this.add
-      .rectangle(x, y, cardWidth, cardHeight, 0x222244, 0.85)
+      .rectangle(x, y, CARD_WIDTH, CARD_HEIGHT, 0x222244, 0.85)
       .setStrokeStyle(3, 0x4da6ff)
       .setInteractive({ useHandCursor: true });
 
-    // Glow on hover
+    const portrait = this.add
+      .sprite(x, y - 80, character.key)
+      .setScale(3.5)
+      .play(animations.idle.key);
+
+    // Highlight and walk on hover
     bg.on('pointerover', () => {
       bg.setStrokeStyle(4, 0xffdd44);
       bg.setFillStyle(0x333355, 0.95);
+      portrait.play(animations.walk.key);
     });
     bg.on('pointerout', () => {
       bg.setStrokeStyle(3, 0x4da6ff);
       bg.setFillStyle(0x222244, 0.85);
+      portrait.play(animations.idle.key);
     });
-
     bg.on('pointerdown', () => {
-      this.scene.start('GameScene', { characterType: char.key });
+      this.scene.start('GameScene', { characterType: character.key });
     });
 
-    // Character portrait with walk animation
-    const idleAnim = `${char.key}-select-idle`;
-    const walkAnim = `${char.key}-select-walk`;
-
-    const portrait = this.add
-      .sprite(x, y - 80, char.key)
-      .setScale(3.5)
-      .play(idleAnim);
-
-    // Walking animation on hover
-    bg.on('pointerover', () => {
-      portrait.play(walkAnim);
-    });
-    bg.on('pointerout', () => {
-      portrait.play(idleAnim);
-    });
-
-    // Character name
     this.add
-      .text(x, y + 40, char.name, {
-        fontFamily: 'monospace',
+      .text(x, y + 40, card.name, {
+        fontFamily: FONT,
         fontSize: '26px',
         color: '#ffdd44',
         stroke: '#000',
@@ -331,78 +94,39 @@ export class CharacterSelectionScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    // Description
     this.add
-      .text(x, y + 70, char.description, {
-        fontFamily: 'monospace',
+      .text(x, y + 70, card.description, {
+        fontFamily: FONT,
         fontSize: '11px',
         color: '#bbbbbb',
-        wordWrap: { width: cardWidth - 40 },
+        wordWrap: { width: CARD_WIDTH - 40 },
         align: 'center',
       })
       .setOrigin(0.5);
 
-    // Stats section
-    const statsY = y + 120;
+    const ratingsY = y + 120;
+    for (const { label, stat, color, offsetX } of RATINGS) {
+      this.add
+        .text(x + offsetX, ratingsY, label, {
+          fontFamily: FONT,
+          fontSize: '12px',
+          color,
+          stroke: '#000',
+          strokeThickness: 2,
+        })
+        .setOrigin(0.5);
+      this.add
+        .text(x + offsetX, ratingsY + 20, '⭐'.repeat(card[stat]), {
+          fontFamily: FONT,
+          fontSize: '12px',
+          color: '#ffffff',
+        })
+        .setOrigin(0.5);
+    }
 
-    // Damage
-    this.add
-      .text(x - 80, statsY, 'DMG', {
-        fontFamily: 'monospace',
-        fontSize: '12px',
-        color: '#ffaa44',
-        stroke: '#000',
-        strokeThickness: 2,
-      })
-      .setOrigin(0.5);
-    this.add
-      .text(x - 80, statsY + 20, char.stats.damage, {
-        fontFamily: 'monospace',
-        fontSize: '12px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-
-    // Speed
-    this.add
-      .text(x, statsY, 'SPD', {
-        fontFamily: 'monospace',
-        fontSize: '12px',
-        color: '#44aaff',
-        stroke: '#000',
-        strokeThickness: 2,
-      })
-      .setOrigin(0.5);
-    this.add
-      .text(x, statsY + 20, char.stats.speed, {
-        fontFamily: 'monospace',
-        fontSize: '12px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-
-    // Range
-    this.add
-      .text(x + 80, statsY, 'RNG', {
-        fontFamily: 'monospace',
-        fontSize: '12px',
-        color: '#44ff44',
-        stroke: '#000',
-        strokeThickness: 2,
-      })
-      .setOrigin(0.5);
-    this.add
-      .text(x + 80, statsY + 20, char.stats.range, {
-        fontFamily: 'monospace',
-        fontSize: '12px',
-        color: '#ffffff',
-      })
-      .setOrigin(0.5);
-
-    // Click hint
     this.add
       .text(x, y + 175, 'Click to Play', {
-        fontFamily: 'monospace',
+        fontFamily: FONT,
         fontSize: '12px',
         color: '#888888',
         fontStyle: 'italic',

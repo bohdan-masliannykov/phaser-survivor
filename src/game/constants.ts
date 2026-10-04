@@ -143,6 +143,14 @@ export const DEFAULT_ENEMY: EnemyKey = 'slime';
 export const PLAYER = {
   soldier: {
     key: 'soldier',
+    // Selection screen card; ratings are stars out of 4 and purely descriptive
+    card: {
+      name: 'Soldier',
+      description: 'Swift melee fighter with spinning slash',
+      damage: 3,
+      speed: 3,
+      range: 1,
+    },
     hitbox: {
       widthPercent: 0.13,
       heightPercent: 0.2,
@@ -180,6 +188,14 @@ export const PLAYER = {
   },
   wizzard: {
     key: 'wizzard',
+    // Selection screen card; ratings are stars out of 4 and purely descriptive
+    card: {
+      name: 'Wizard',
+      description: 'Ranged spellcaster with piercing fireballs',
+      damage: 3,
+      speed: 2,
+      range: 3,
+    },
     hitbox: {
       widthPercent: 0.14,
       heightPercent: 0.2,
@@ -217,6 +233,14 @@ export const PLAYER = {
   },
   archer: {
     key: 'archer',
+    // Selection screen card; ratings are stars out of 4 and purely descriptive
+    card: {
+      name: 'Archer',
+      description: 'Precise archer with rapid arrows',
+      damage: 2,
+      speed: 3,
+      range: 3,
+    },
     hitbox: {
       widthPercent: 0.12,
       heightPercent: 0.18,
@@ -254,6 +278,14 @@ export const PLAYER = {
   },
   armoredAxeman: {
     key: 'armored-axeman',
+    // Selection screen card; ratings are stars out of 4 and purely descriptive
+    card: {
+      name: 'Armored Axeman',
+      description: 'Heavy armored warrior with devastating cleave',
+      damage: 4,
+      speed: 2,
+      range: 1,
+    },
     hitbox: {
       widthPercent: 0.15,
       heightPercent: 0.22,
@@ -291,6 +323,14 @@ export const PLAYER = {
   },
   priest: {
     key: 'priest',
+    // Selection screen card; ratings are stars out of 4 and purely descriptive
+    card: {
+      name: 'Priest',
+      description: 'Holy aura dealer with damage over time',
+      damage: 2,
+      speed: 2,
+      range: 2,
+    },
     hitbox: {
       widthPercent: 0.14,
       heightPercent: 0.2,
