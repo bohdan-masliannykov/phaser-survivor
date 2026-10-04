@@ -14,17 +14,10 @@ export class EnemyManager {
 
   private enemyPool: EnemyPool;
   private spawnTimer: Phaser.Time.TimerEvent | null = null;
-  onEnemyDeath?: (x: number, y: number, enemyType: string) => void;
 
-  constructor(scene: GameScene, onEnemyDeath?: (x: number, y: number, enemyType: string) => void) {
+  constructor(scene: GameScene) {
     this.scene = scene;
-    this.onEnemyDeath = onEnemyDeath;
-
-    this.enemyPool = new EnemyPool(scene, {
-      initialSize: 50,
-      maxSize: 1000,
-      onEnemyDeath,
-    });
+    this.enemyPool = new EnemyPool(scene, { initialSize: 50, maxSize: 1000 });
   }
 
   initializeSpawner() {

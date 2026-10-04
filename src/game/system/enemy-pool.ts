@@ -17,11 +17,11 @@
 import { DEFAULT_ENEMY, ENEMY, type EnemyKey } from '@constants';
 import { Enemy } from '@entities/enemies/enemy';
 import type { GameScene } from '@scenes/game-scene';
+import { GameEvents } from './game-events';
 
 export interface PoolConfig {
   initialSize: number;
   maxSize: number;
-  onEnemyDeath?: (x: number, y: number, enemyType: string) => void;
 }
 
 export interface EnemyScaling {
@@ -100,7 +100,7 @@ export class EnemyPool {
       this.activeCacheDirty = true;
     };
     enemy.onDeath = () => {
-      this.poolConfig.onEnemyDeath?.(enemy.x, enemy.y, enemy.texture.key);
+      this.scene.events.emit(GameEvents.ENEMY_DIED, enemy.x, enemy.y, enemy.texture.key);
       this.release(enemy);
     };
     return enemy;
