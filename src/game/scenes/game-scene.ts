@@ -158,7 +158,7 @@ export class GameScene extends Phaser.Scene {
       const touchDist = (playerBody.halfWidth + enemyBody.halfWidth) * 0.8;
 
       if (dist < touchDist) {
-        const scaledDamage = Math.round(ENEMY_CONTACT_DAMAGE * this.progression.hpMultiplier);
+        const scaledDamage = Math.round(ENEMY_CONTACT_DAMAGE * this.progression.damageMultiplier);
         this.player.takeDamage(scaledDamage);
         this.lastContactDamageTime = this.time.now;
 
