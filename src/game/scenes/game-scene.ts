@@ -188,11 +188,15 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  private hidePauseOverlay(): void {
+    for (const el of this.pauseOverlay) el.destroy();
+    this.pauseOverlay.length = 0;
+  }
+
   private togglePause(): void {
     if (this.paused) {
       this.setPaused(false);
-      for (const el of this.pauseOverlay) el.destroy();
-      this.pauseOverlay.length = 0;
+      this.hidePauseOverlay();
     } else {
       this.setPaused(true);
 
@@ -229,6 +233,8 @@ export class GameScene extends Phaser.Scene {
     this.pendingLevelUps++;
     if (this.upgradePicker.isVisible()) return;
 
+    // The picker takes over the pause; it resumes the game once a choice is made
+    this.hidePauseOverlay();
     this.setPaused(true);
     this.showNextUpgrade();
   }
