@@ -7,8 +7,9 @@ export class ProgressionSystem {
   elapsedMs: number = 0;
   difficultyTier: number = 0;
 
-  // Difficulty multipliers (applied by enemy manager)
+  // Difficulty multipliers: hp and speed are applied to enemies as they spawn
   hpMultiplier: number = 1;
+  damageMultiplier: number = 1;
   speedMultiplier: number = 1;
   spawnDelayMultiplier: number = 1;
 
@@ -50,6 +51,7 @@ export class ProgressionSystem {
 
     // Exponential curve: gentle first 5 min, steep after 10 min
     this.hpMultiplier = 1 + (minutes / 5) ** 2 * 0.5;
+    this.damageMultiplier = 1 + (minutes / 5) ** 2 * 0.5;
     this.speedMultiplier = 1 + (minutes / 10) ** 1.5 * 0.25;
     this.spawnDelayMultiplier = Math.max(0.1, 1 - (minutes / 18) ** 2);
   }
