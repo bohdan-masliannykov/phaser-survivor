@@ -37,6 +37,8 @@ export abstract class Enemy extends GameObject {
   private static readonly SEPARATION_RADIUS = 30;
   private static readonly SEPARATION_FORCE = 0.4;
   private static readonly FLIP_DEAD_ZONE = 5;
+  private static readonly FLASH_MS = 80;
+  private static readonly BURN_FLASH_MS = 150;
   private static readonly _moveVec = { x: 0, y: 0 };
 
   // Lateral wobble — each enemy gets unique phase & frequency
@@ -110,29 +112,17 @@ export abstract class Enemy extends GameObject {
   }
 
   private showDamageFlash(): void {
-    const originalTint = this.tint;
-    this.setTint(0xffffff); // Flash white
-    this.scene.tweens.add({
-      targets: this,
-      tint: originalTint,
-      duration: 100,
-      onComplete: () => {
-        this.setTint(originalTint);
-      },
-    });
+    this.setTintFill(0xffffff);
+    this.clearTintLater(Enemy.FLASH_MS);
   }
 
   private showBurnEffect(): void {
-    this.setTint(0xff6644); // Flash orange/red for burn
-    this.scene.tweens.add({
-      targets: this,
-      tint: 0xffffff,
-      duration: 150,
-      delay: 0,
-      onComplete: () => {
-        this.setTint(0xffffff);
-      },
-    });
+    this.setTint(0xff6644);
+    this.clearTintLater(Enemy.BURN_FLASH_MS);
+  }
+
+  private clearTintLater(delayMs: number): void {
+    this.scene.time.delayedCall(delayMs, () => this.clearTint());
   }
 
   restore(x: number, y: number, hpMultiplier: number = 1, speedMultiplier: number = 1): void {
@@ -142,6 +132,7 @@ export abstract class Enemy extends GameObject {
     this.setPosition(x, y);
     this.setVelocity(0, 0);
     this.setBodyEnabled(true);
+    this.clearTint();
 
     this.heal(this.maxHealth);
     this.healthBar?.showBar();
