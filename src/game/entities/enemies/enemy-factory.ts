@@ -5,13 +5,6 @@ import { Skeleton } from './skeleton';
 import { Slime } from './slime';
 
 export class EnemyFactory {
-  static createRandomEnemy(scene: Phaser.Scene, x: number, y: number): Enemy {
-    const enemyTypes = Object.keys(ENEMY) as (keyof typeof ENEMY)[];
-    const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-
-    return EnemyFactory.createEnemyByType(scene, x, y, randomType);
-  }
-
   static createEnemyByType(
     scene: Phaser.Scene,
     x: number,

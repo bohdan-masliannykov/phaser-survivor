@@ -2,8 +2,8 @@ import { CharacterSelectionScene } from '@scenes/character-selection-scene';
 import { GameScene } from '@scenes/game-scene';
 import { PreloadScene } from '@scenes/preload-scene';
 
-export const MIN_WIDTH = 800;
-export const MIN_HEIGHT = 600;
+const MIN_WIDTH = 800;
+const MIN_HEIGHT = 600;
 
 export const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,

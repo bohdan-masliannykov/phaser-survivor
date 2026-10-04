@@ -4,7 +4,7 @@ import type { Bow } from '@entities/weapons/bow';
 import type { FireWand } from '@entities/weapons/fire-wand';
 import type { Sword } from '@entities/weapons/sword';
 
-export interface UpgradeOption {
+interface UpgradeOption {
   id: string;
   name: string;
   description: string;

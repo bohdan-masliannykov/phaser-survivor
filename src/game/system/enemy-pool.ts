@@ -51,8 +51,6 @@ export class EnemyPool {
 
     // Initialize the pool by pre-creating enemies
     this.initializePool();
-
-    console.log(`🎮 Enemy Pool initialized: ${this.allEnemies.length} enemies pre-created`);
   }
 
   /**
@@ -132,15 +130,6 @@ export class EnemyPool {
   }
 
   /**
-   * Release all active enemies back to pool
-   */
-  public releaseAll(): void {
-    for (const enemy of Array.from(this.activeEnemies)) {
-      this.release(enemy);
-    }
-  }
-
-  /**
    * Get all currently active enemies
    */
   public getActive(): Enemy[] {
@@ -149,37 +138,6 @@ export class EnemyPool {
       this.activeCacheDirty = false;
     }
     return this.activeCache;
-  }
-
-  /**
-   * Get active enemy count
-   */
-  public getActiveCount(): number {
-    return this.activeEnemies.size;
-  }
-
-  /**
-   * Get available enemy count (waiting to be spawned)
-   */
-  public getAvailableCount(): number {
-    return this.availableEnemies.length;
-  }
-
-  /**
-   * Get pool status for debugging
-   */
-  public getPoolStats(): {
-    total: number;
-    active: number;
-    available: number;
-    utilization: string;
-  } {
-    return {
-      total: this.allEnemies.length,
-      active: this.activeEnemies.size,
-      available: this.availableEnemies.length,
-      utilization: `${((this.activeEnemies.size / this.allEnemies.length) * 100).toFixed(1)}%`,
-    };
   }
 
   /**
