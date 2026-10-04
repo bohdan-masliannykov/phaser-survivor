@@ -107,7 +107,9 @@ export const ENEMY = {
       },
     },
   },
-};
+} as const;
+
+export type EnemyKey = keyof typeof ENEMY;
 
 export const PLAYER = {
   soldier: {
@@ -265,4 +267,6 @@ export const PLAYER = {
       damageIntervalMs: 600,
     },
   },
-};
+} as const;
+
+export type CharacterKey = (typeof PLAYER)[keyof typeof PLAYER]['key'];

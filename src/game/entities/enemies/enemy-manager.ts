@@ -1,4 +1,4 @@
-import { ENEMY, ENEMY_SPAWN_INTERVAL_MS, SPAWN_MARGIN } from '@constants';
+import { ENEMY, ENEMY_SPAWN_INTERVAL_MS, type EnemyKey, SPAWN_MARGIN } from '@constants';
 import type { GameScene } from '@scenes/game-scene';
 import { EnemyPool } from '@system/enemy-pool';
 import type { Enemy } from './enemy';
@@ -17,7 +17,7 @@ export class EnemyManager {
     this.enemyPool = new EnemyPool(scene, {
       initialSize: 50,
       maxSize: 1000,
-      enemyTypes: Object.keys(ENEMY) as (keyof typeof ENEMY)[],
+      enemyTypes: Object.keys(ENEMY) as EnemyKey[],
       onEnemyDeath,
     });
   }
@@ -97,7 +97,7 @@ export class EnemyManager {
    * Min 1-3: skeletons start appearing (~10%)
    * Min 3+: orcs start appearing, skeletons increase, slimes decrease
    */
-  private rollEnemyType(): keyof typeof ENEMY {
+  private rollEnemyType(): EnemyKey {
     const minutes = this.scene.progression.elapsedMs / 60_000;
 
     if (minutes < 1) return 'slime';

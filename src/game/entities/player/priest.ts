@@ -22,7 +22,7 @@ export class Priest extends Player {
       }
     );
 
-    const aura = new Aura(PLAYER.priest.weaponStats as any);
+    const aura = new Aura(PLAYER.priest.weaponStats);
     aura.initializeVisuals(scene);
     this.weaponManager.addWeapon('aura', aura);
   }

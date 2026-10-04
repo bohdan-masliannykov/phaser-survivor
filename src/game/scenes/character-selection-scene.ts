@@ -1,7 +1,7 @@
-import { PLAYER } from '@constants';
+import { type CharacterKey, PLAYER } from '@constants';
 
 interface CharacterInfo {
-  key: string;
+  key: CharacterKey;
   name: string;
   description: string;
   stats: {

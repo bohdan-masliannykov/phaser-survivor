@@ -1,16 +1,11 @@
-import { ENEMY } from '@constants';
+import { ENEMY, type EnemyKey } from '@constants';
 import type { Enemy } from './enemy';
 import { Orc } from './orc';
 import { Skeleton } from './skeleton';
 import { Slime } from './slime';
 
 export class EnemyFactory {
-  static createEnemyByType(
-    scene: Phaser.Scene,
-    x: number,
-    y: number,
-    type: keyof typeof ENEMY
-  ): Enemy {
+  static createEnemyByType(scene: Phaser.Scene, x: number, y: number, type: EnemyKey): Enemy {
     switch (type) {
       case ENEMY.orc.key:
         return new Orc(scene, x, y);
