@@ -164,6 +164,8 @@ export class Enemy extends GameObject {
   }
 
   startInactive(): void {
+    // Pooled enemies are parked at (0, 0); without this they would all collide there every frame
+    this.setBodyEnabled(false);
     this.setActive(false);
     this.setVisible(false);
     this.healthBar?.hideBar();
