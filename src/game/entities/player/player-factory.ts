@@ -1,5 +1,6 @@
 import { PLAYER } from '@constants';
 import { Soldier } from './soldier';
+import { ArmoredAxeman } from './armored-axeman';
 import { Wizzard } from './wizzard';
 import { Archer } from './archer';
 import { Priest } from './priest';
@@ -14,6 +15,8 @@ export class PlayerFactory {
     switch (characterType) {
       case PLAYER.soldier.key:
         return new Soldier(scene, x, y);
+      case PLAYER.armoredAxeman.key:
+        return new ArmoredAxeman(scene, x, y);
       case PLAYER.wizzard.key:
         return new Wizzard(scene, x, y);
       case PLAYER.archer.key:
