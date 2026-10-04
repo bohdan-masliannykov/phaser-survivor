@@ -143,6 +143,12 @@ export const DEFAULT_ENEMY: EnemyKey = 'slime';
 export const PLAYER = {
   soldier: {
     key: 'soldier',
+    hitbox: {
+      widthPercent: 0.13,
+      heightPercent: 0.2,
+      offsetXPercent: (1 - 0.13) / 2,
+      offsetYPercent: 0.38,
+    },
     weapon: 'sword',
     animations: {
       idle: {
@@ -174,6 +180,12 @@ export const PLAYER = {
   },
   wizzard: {
     key: 'wizzard',
+    hitbox: {
+      widthPercent: 0.14,
+      heightPercent: 0.2,
+      offsetXPercent: (1 - 0.14) / 2,
+      offsetYPercent: 0.38,
+    },
     weapon: 'fire-wand',
     animations: {
       idle: {
@@ -205,6 +217,12 @@ export const PLAYER = {
   },
   archer: {
     key: 'archer',
+    hitbox: {
+      widthPercent: 0.12,
+      heightPercent: 0.18,
+      offsetXPercent: (1 - 0.12) / 2,
+      offsetYPercent: 0.4,
+    },
     weapon: 'bow',
     animations: {
       idle: {
@@ -236,6 +254,12 @@ export const PLAYER = {
   },
   armoredAxeman: {
     key: 'armored-axeman',
+    hitbox: {
+      widthPercent: 0.15,
+      heightPercent: 0.22,
+      offsetXPercent: (1 - 0.15) / 2,
+      offsetYPercent: 0.36,
+    },
     weapon: 'sword',
     animations: {
       idle: {
@@ -267,6 +291,12 @@ export const PLAYER = {
   },
   priest: {
     key: 'priest',
+    hitbox: {
+      widthPercent: 0.14,
+      heightPercent: 0.2,
+      offsetXPercent: (1 - 0.14) / 2,
+      offsetYPercent: 0.38,
+    },
     weapon: 'aura',
     animations: {
       idle: {
@@ -298,4 +328,11 @@ export const PLAYER = {
   },
 } as const;
 
-export type CharacterKey = (typeof PLAYER)[keyof typeof PLAYER]['key'];
+export type CharacterDef = (typeof PLAYER)[keyof typeof PLAYER];
+export type CharacterKey = CharacterDef['key'];
+
+export function getCharacter(key: CharacterKey): CharacterDef {
+  const def = Object.values(PLAYER).find((character) => character.key === key);
+  if (!def) throw new Error(`Unknown character: ${key}`);
+  return def;
+}
