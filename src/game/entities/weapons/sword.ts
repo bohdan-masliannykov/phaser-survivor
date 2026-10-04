@@ -38,8 +38,13 @@ export class Sword extends Weapon {
     this.radius = Math.round(this.radius * multiplier);
   }
 
-  attack(_target: Enemy, player: Player): void {
+  attack(target: Enemy, player: Player): void {
     if (!this.isOffCooldown(player.scene.time.now)) return;
+
+    // Hold the swing until the target is close enough to be hit
+    const distance = Phaser.Math.Distance.Between(player.x, player.y, target.x, target.y);
+    if (distance > this.radius) return;
+
     this.updateCooldown(player.scene.time.now);
 
     this.hitEnemies.clear();
