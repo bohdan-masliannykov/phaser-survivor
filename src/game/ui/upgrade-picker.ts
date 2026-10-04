@@ -1,7 +1,6 @@
 import type { Player } from '@entities/player/player';
 import type { Aura } from '@entities/weapons/aura';
-import type { Bow } from '@entities/weapons/bow';
-import type { FireWand } from '@entities/weapons/fire-wand';
+import { ProjectileWeapon } from '@entities/weapons/projectile-weapon';
 import type { Sword } from '@entities/weapons/sword';
 
 interface UpgradeOption {
@@ -15,8 +14,10 @@ interface UpgradeOption {
 
 const MIN_COOLDOWN_MS = 400;
 
-const hasRangedWeapon = (player: Player) =>
-  !!player.weaponManager.getWeapon('fire-wand') || !!player.weaponManager.getWeapon('bow');
+const getProjectileWeapons = (player: Player) =>
+  player.weaponManager.getAllWeapons().filter((weapon) => weapon instanceof ProjectileWeapon);
+
+const hasRangedWeapon = (player: Player) => getProjectileWeapons(player).length > 0;
 
 const ALL_UPGRADES: UpgradeOption[] = [
   // ── Universal upgrades ──────────────────────────────
@@ -86,7 +87,7 @@ const ALL_UPGRADES: UpgradeOption[] = [
     },
   },
 
-  // ── Projectile upgrades (fire-wand & bow) ───────────
+  // ── Projectile upgrades (any projectile weapon) ─────
   {
     id: 'extra_projectile',
     name: 'Extra Projectile',
@@ -94,10 +95,7 @@ const ALL_UPGRADES: UpgradeOption[] = [
     color: 0xff8800,
     canApply: hasRangedWeapon,
     apply: (player) => {
-      const wand = player.weaponManager.getWeapon('fire-wand') as FireWand | undefined;
-      const bow = player.weaponManager.getWeapon('bow') as Bow | undefined;
-      if (wand) wand.addProjectile();
-      if (bow) bow.addProjectile();
+      for (const weapon of getProjectileWeapons(player)) weapon.addProjectile();
     },
   },
   {
@@ -107,10 +105,7 @@ const ALL_UPGRADES: UpgradeOption[] = [
     color: 0xcc44ff,
     canApply: hasRangedWeapon,
     apply: (player) => {
-      const wand = player.weaponManager.getWeapon('fire-wand') as FireWand | undefined;
-      const bow = player.weaponManager.getWeapon('bow') as Bow | undefined;
-      if (wand) wand.addPierce();
-      if (bow) bow.addPierce();
+      for (const weapon of getProjectileWeapons(player)) weapon.addPierce();
     },
   },
 
