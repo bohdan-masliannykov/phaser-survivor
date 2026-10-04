@@ -1,3 +1,5 @@
+import { showDamageNumber } from './damage-numbers';
+
 export class HealthBar extends Phaser.GameObjects.Container {
   private readonly barWidth: number;
   private readonly bar: Phaser.GameObjects.Rectangle;
@@ -32,19 +34,7 @@ export class HealthBar extends Phaser.GameObjects.Container {
   }
 
   showDamageText(amount: number): void {
-    const dmgText = this.scene.add.text(this.x, this.y, amount.toString(), {
-      font: '16px monospace',
-      color: '#fff',
-      stroke: '#000',
-      strokeThickness: 3,
-    });
-    this.scene.tweens.add({
-      targets: dmgText,
-      y: this.y - 20,
-      alpha: 0,
-      duration: 500,
-      onComplete: () => dmgText.destroy(),
-    });
+    showDamageNumber(this.scene, this.x, this.y, amount);
   }
 
   hideBar(): void {
