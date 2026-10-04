@@ -43,6 +43,16 @@ const CHARACTERS: CharacterInfo[] = [
     },
   },
   {
+    key: PLAYER.armoredAxeman.key,
+    name: 'Armored Axeman',
+    description: 'Heavy armored warrior with devastating cleave',
+    stats: {
+      damage: '⭐⭐⭐⭐',
+      speed: '⭐⭐',
+      range: '⭐',
+    },
+  },
+  {
     key: PLAYER.priest.key,
     name: 'Priest',
     description: 'Holy aura dealer with damage over time',
@@ -70,6 +80,10 @@ export class CharacterSelectionScene extends Phaser.Scene {
       frameHeight: 100,
     });
     this.load.spritesheet(PLAYER.archer.key, `/assets/${PLAYER.archer.key}.png`, {
+      frameWidth: 100,
+      frameHeight: 100,
+    });
+    this.load.spritesheet(PLAYER.armoredAxeman.key, `/assets/${PLAYER.armoredAxeman.key}.png`, {
       frameWidth: 100,
       frameHeight: 100,
     });
@@ -208,6 +222,34 @@ export class CharacterSelectionScene extends Phaser.Scene {
       });
     }
 
+    // Armored Axeman idle
+    if (!this.anims.exists('armored-axeman-select-idle')) {
+      const axemanIdle = PLAYER.armoredAxeman.animations.idle;
+      this.anims.create({
+        key: 'armored-axeman-select-idle',
+        frames: this.anims.generateFrameNumbers(PLAYER.armoredAxeman.key, {
+          start: axemanIdle.start,
+          end: axemanIdle.end,
+        }),
+        frameRate: 6,
+        repeat: -1,
+      });
+    }
+
+    // Armored Axeman walk
+    if (!this.anims.exists('armored-axeman-select-walk')) {
+      const axemanWalk = PLAYER.armoredAxeman.animations.walk;
+      this.anims.create({
+        key: 'armored-axeman-select-walk',
+        frames: this.anims.generateFrameNumbers(PLAYER.armoredAxeman.key, {
+          start: axemanWalk.start,
+          end: axemanWalk.end,
+        }),
+        frameRate: 10,
+        repeat: -1,
+      });
+    }
+
     // Priest idle
     if (!this.anims.exists('priest-select-idle')) {
       const priestIdle = PLAYER.priest.animations.idle;
@@ -262,8 +304,8 @@ export class CharacterSelectionScene extends Phaser.Scene {
     });
 
     // Character portrait with walk animation
-    const idleAnim = char.key === 'soldier' ? 'soldier-select-idle' : char.key === 'wizzard' ? 'wizzard-select-idle' : char.key === 'archer' ? 'archer-select-idle' : 'priest-select-idle';
-    const walkAnim = char.key === 'soldier' ? 'soldier-select-walk' : char.key === 'wizzard' ? 'wizzard-select-walk' : char.key === 'archer' ? 'archer-select-walk' : 'priest-select-walk';
+    const idleAnim = `${char.key}-select-idle`;
+    const walkAnim = `${char.key}-select-walk`;
 
     const portrait = this.add
       .sprite(x, y - 80, char.key)
