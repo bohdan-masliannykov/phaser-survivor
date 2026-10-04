@@ -5,7 +5,7 @@ export abstract class Weapon {
   protected minDamage: number = 5;
   protected maxDamage: number = 10;
   protected cooldownMs: number = 500;
-  protected _lastAttackTime: number = 0;
+  protected _lastAttackTime: number = Number.NEGATIVE_INFINITY;
   protected projectileCount: number = 1;
 
   getDamage(): number {

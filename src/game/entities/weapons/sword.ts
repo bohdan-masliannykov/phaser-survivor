@@ -1,5 +1,6 @@
 import type { Enemy } from '@entities/enemies/enemy';
 import type { Player } from '@entities/player/player';
+import { gameClock } from '@system/game-clock';
 import { Weapon } from './weapon';
 
 interface SwordStats {
@@ -39,13 +40,13 @@ export class Sword extends Weapon {
   }
 
   attack(target: Enemy, player: Player): void {
-    if (!this.isOffCooldown(player.scene.time.now)) return;
+    if (!this.isOffCooldown(gameClock.now)) return;
 
     // Hold the swing until the target is close enough to be hit
     const distance = Phaser.Math.Distance.Between(player.x, player.y, target.x, target.y);
     if (distance > this.radius) return;
 
-    this.updateCooldown(player.scene.time.now);
+    this.updateCooldown(gameClock.now);
 
     this.hitEnemies.clear();
     this.showSlashEffect(player);
