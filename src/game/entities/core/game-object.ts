@@ -33,6 +33,7 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
     death: 'death',
   };
   healthOptions?: HealthOptions;
+  protected hitboxConfig?: HitboxConfig;
 
   constructor(
     scene: Phaser.Scene,
@@ -64,7 +65,6 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
         y - this.barOffsetY,
         healthOptions.barWidth ?? 24,
         healthOptions.barHeight ?? 4,
-        this.maxHealth,
         healthOptions.show
       );
     }
@@ -74,6 +74,10 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
   }
 
   move(directions: { x: number; y: number }): void {
+    if (this.visible === false) {
+      return;
+    }
+
     const norm = Math.sqrt(
       directions.x * directions.x + directions.y * directions.y
     );
@@ -97,12 +101,13 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
 
   takeDamage(amount: number): void {
     this.health = Math.max(0, this.health - amount);
-    this.healthBar?.takeDamage(amount);
+    this.healthBar?.showDamageText(amount);
+    this.healthBar?.updateDisplay(this.health / this.maxHealth);
   }
 
   heal(amount: number): void {
     this.health = Math.min(this.maxHealth, this.health + amount);
-    this.healthBar?.heal(amount);
+    this.healthBar?.updateDisplay(this.health / this.maxHealth);
   }
 
   isDead(): boolean {
@@ -150,15 +155,22 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
     body.setOffset(offsetX, offsetY);
   }
 
-  destroyWithAnimation(deathAnimKey?: string, fromScene?: boolean): void {
-    this.setVelocity(0, 0);
-    this.healthBar?.setVisible(false);
+  setFacingDirection(isLeft: boolean): void {
+    this.setFlipX(isLeft);
+    if (this.hitboxConfig) {
+      this.updateBodyForScale(isLeft, this.hitboxConfig);
+    }
+  }
 
-    this.play(deathAnimKey ?? this.animations.death).once(
+  releaseObjectWithAnimation(
+    animationKey?: string,
+    callback?: () => void
+  ): void {
+    this.play(animationKey ?? this.animations.death).once(
       'animationcomplete',
       () => {
-        this.healthBar?.destroy();
-        super.destroy(fromScene);
+        this.healthBar?.setVisible(false);
+        callback?.();
       }
     );
   }

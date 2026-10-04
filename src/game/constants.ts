@@ -3,13 +3,13 @@ export const PLAYER_SPEED = 150; // pixels per second
 export const ENEMY_SPEED = 50; // pixels per second
 export const ARRIVE_RADIUS = 6; // pixels
 export const SPRITE_SCALE = 2.5; // scaling factor for sprites
-export const ENEMY_SPAWN_INTERVAL_MS = 1000; // milliseconds
+export const ENEMY_SPAWN_INTERVAL_MS = 600; // milliseconds
 export const SPAWN_MARGIN = 40; // pixels outside of view
 
-export const FIRE_INTERVAL_MS = 500; // auto-shot cadence
 export const PROJECTILE_SPEED = 450; // pixels per second
 export const PROJECTILE_LIFETIME_MS = 900; // despawn after this time
-export const PROJECTILE_HIT_RADIUS = 18; // simple distance-based collision
+export const PROJECTILE_HIT_RADIUS = 14; // simple distance-based collision
+export const AUTO_FIRE_RANGE = 400; // weapon engagement range
 
 /**
  * Returns the start and end frame indices for a row in a sprite sheet.
@@ -26,6 +26,31 @@ export function getRowFrameRange(
   const end = start + framesInRow - 1;
   return { start, end };
 }
+
+// XP & Leveling
+export const XP_GEM_PICKUP_RADIUS = 80; // magnetic pull starts
+export const XP_GEM_COLLECT_RADIUS = 25; // instant pickup
+export const XP_GEM_MAGNETIC_SPEED = 350; // px/s when being pulled
+export const XP_PER_ENEMY: Record<string, number> = {
+  slime: 1,
+  orc: 3,
+  skeleton: 2,
+};
+export const XP_THRESHOLDS = [
+  3, 6, 12, 20, 35, 55, 80, 110, 150, 200, 260, 330, 400, 470, 550,
+  640, 740, 850, 970, 1100,
+]; // XP needed to reach level 2, 3, 4, ...
+
+
+// Difficulty scaling
+export const DIFFICULTY_INTERVAL_MS = 30_000; // check every 30s for smoother curve
+export const DIFFICULTY_HP_MULT = 0.08; // +8% HP per interval
+export const DIFFICULTY_SPEED_MULT = 0.025; // +2.5% speed per interval
+export const DIFFICULTY_SPAWN_MULT = 0.92; // spawn delay *0.92 per interval
+
+// Player damage from enemies
+export const ENEMY_CONTACT_DAMAGE = 5;
+export const ENEMY_CONTACT_COOLDOWN_MS = 500; // invulnerability frames
 
 export const RARITY_COLORS: Record<string, number> = {
   common: 0xffffff,
@@ -53,7 +78,7 @@ export const ENEMY = {
       death: {
         key: 'slime-death',
         ...getRowFrameRange(12, 4, 5),
-        frameRate: 8,
+        frameRate: 14,
         repeat: 0,
       },
     },
@@ -76,7 +101,7 @@ export const ENEMY = {
       death: {
         key: 'orc-death',
         ...getRowFrameRange(8, 6, 5),
-        frameRate: 8,
+        frameRate: 14,
         repeat: 0,
       },
     },
@@ -99,7 +124,7 @@ export const ENEMY = {
       death: {
         key: 'skeleton-death',
         ...getRowFrameRange(8, 4, 6),
-        frameRate: 8,
+        frameRate: 14,
         repeat: 0,
       },
     },
@@ -109,6 +134,7 @@ export const ENEMY = {
 export const PLAYER = {
   soldier: {
     key: 'soldier',
+    weapon: 'sword',
     animations: {
       idle: {
         key: 'soldier-idle',
@@ -125,13 +151,21 @@ export const PLAYER = {
       death: {
         key: 'soldier-death',
         ...getRowFrameRange(9, 4, 6),
-        frameRate: 8,
+        frameRate: 14,
         repeat: 0,
       },
+    },
+    weaponStats: {
+      minDamage: 8,
+      maxDamage: 12,
+      cooldownMs: 1200,
+      radius: 80,
+      slashDuration: 300,
     },
   },
   wizzard: {
     key: 'wizzard',
+    weapon: 'fire-wand',
     animations: {
       idle: {
         key: 'wizzard-idle',
@@ -148,9 +182,78 @@ export const PLAYER = {
       death: {
         key: 'wizzard-death',
         ...getRowFrameRange(15, 4, 9),
-        frameRate: 8,
+        frameRate: 14,
         repeat: 0,
       },
+    },
+    weaponStats: {
+      minDamage: 6,
+      maxDamage: 12,
+      cooldownMs: 2000,
+      projectileCount: 1,
+      basePierce: 1,
+    },
+  },
+  archer: {
+    key: 'archer',
+    weapon: 'bow',
+    animations: {
+      idle: {
+        key: 'archer-idle',
+        ...getRowFrameRange(12, 6, 0),
+        frameRate: 8,
+        repeat: -1,
+      },
+      walk: {
+        key: 'archer-walk',
+        ...getRowFrameRange(12, 8, 1),
+        frameRate: 13,
+        repeat: -1,
+      },
+      death: {
+        key: 'archer-death',
+        ...getRowFrameRange(12, 4, 4),
+        frameRate: 14,
+        repeat: 0,
+      },
+    },
+    weaponStats: {
+      minDamage: 6,
+      maxDamage: 12,
+      cooldownMs: 1200,
+      projectileCount: 1,
+      basePierce: 1,
+    },
+  },
+  priest: {
+    key: 'priest',
+    weapon: 'aura',
+    animations: {
+      idle: {
+        key: 'priest-idle',
+        ...getRowFrameRange(9, 6, 0),
+        frameRate: 8,
+        repeat: -1,
+      },
+      walk: {
+        key: 'priest-walk',
+        ...getRowFrameRange(9, 8, 1),
+        frameRate: 13,
+        repeat: -1,
+      },
+      death: {
+        key: 'priest-death',
+        ...getRowFrameRange(9, 4, 4),
+        frameRate: 14,
+        repeat: 0,
+      },
+    },
+    weaponStats: {
+      minDamage: 2,
+      maxDamage: 4,
+      cooldownMs: 0,
+      radius: 60,
+      damageIntervalMs: 600,
     },
   },
 };
