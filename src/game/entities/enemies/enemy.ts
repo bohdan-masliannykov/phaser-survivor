@@ -1,33 +1,43 @@
-import { ENEMY_SPEED } from '@constants';
-import { GameObject, type HitboxConfig } from '@entities/core/game-object';
+import { ENEMY_SPEED, type EnemyDef } from '@constants';
+import { GameObject } from '@entities/core/game-object';
 
-export abstract class Enemy extends GameObject {
+export class Enemy extends GameObject {
   readonly id: string = Phaser.Utils.String.UUID();
   /** Fired the moment health reaches zero, before the death animation. */
   onDying?: () => void;
   /** Fired when the death animation has finished. */
   onDeath?: () => void;
-  private readonly baseMaxHealth: number;
+  private baseMaxHealth: number;
 
-  constructor(
-    scene: Phaser.Scene,
-    x: number,
-    y: number,
-    texture: string,
-    hitboxConfig: HitboxConfig,
-    healthOptions?: GameObject['healthOptions'],
-    animations?: GameObject['animations']
-  ) {
+  constructor(scene: Phaser.Scene, x: number, y: number, def: EnemyDef) {
     const rndScale = Phaser.Math.Between(20, 23) / 10;
 
-    super(scene, x, y, texture, ENEMY_SPEED, rndScale, healthOptions, animations);
+    super(scene, x, y, def.key, ENEMY_SPEED, rndScale, {
+      maxHealth: def.maxHealth,
+      barWidth: 24,
+      barHeight: 3,
+      barOffsetY: 18,
+      show: true,
+    });
 
-    this.baseMaxHealth = this.maxHealth;
-    this.hitboxConfig = hitboxConfig;
-    this.updateBodyForScale(false, hitboxConfig);
+    this.baseMaxHealth = def.maxHealth;
+    this.applyDefinition(def);
     this.playDefaultAnimation();
     //TODO implement glow effect depending on rarity
     // this.postFX.addGlow(RARITY_COLORS['legendary'], 5, 0, false, 0.1, 5);
+  }
+
+  /** Turns this (possibly recycled) sprite into the given enemy type. */
+  private applyDefinition(def: EnemyDef): void {
+    this.setTexture(def.key);
+    this.baseMaxHealth = def.maxHealth;
+    this.hitboxConfig = def.hitbox;
+    this.animations = {
+      idle: def.animations.idle.key,
+      walk: def.animations.walk.key,
+      death: def.animations.death.key,
+    };
+    this.updateBodyForScale(this.flipX, def.hitbox);
   }
 
   playDefaultAnimation(): void {
@@ -125,7 +135,14 @@ export abstract class Enemy extends GameObject {
     this.scene.time.delayedCall(delayMs, () => this.clearTint());
   }
 
-  restore(x: number, y: number, hpMultiplier: number = 1, speedMultiplier: number = 1): void {
+  restore(
+    x: number,
+    y: number,
+    def: EnemyDef,
+    hpMultiplier: number = 1,
+    speedMultiplier: number = 1
+  ): void {
+    this.applyDefinition(def);
     this.maxHealth = Math.round(this.baseMaxHealth * hpMultiplier);
     this.speed = ENEMY_SPEED * speedMultiplier;
 

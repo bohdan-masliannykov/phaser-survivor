@@ -40,6 +40,13 @@ export const RARITY_COLORS: Record<string, number> = {
 export const ENEMY = {
   slime: {
     key: 'slime',
+    maxHealth: 6,
+    hitbox: {
+      widthPercent: 0.21,
+      heightPercent: 0.11,
+      offsetXPercent: (1 - 0.21) / 2,
+      offsetYPercent: 0.45,
+    },
     animations: {
       idle: {
         key: 'slime-idle',
@@ -63,6 +70,15 @@ export const ENEMY = {
   },
   orc: {
     key: 'orc',
+    maxHealth: 25,
+    hitbox: {
+      widthPercent: 0.15,
+      heightPercent: 0.15,
+      offsetXPercent: (1 - 0.15) / 2,
+      offsetYPercent: 0.41,
+    },
+    // Share of spawns: 0 before `fromMinute`, then grows per minute up to `maxChance`
+    spawn: { fromMinute: 3, chancePerMinute: 0.03, maxChance: 0.25 },
     animations: {
       idle: {
         key: 'orc-idle',
@@ -86,6 +102,15 @@ export const ENEMY = {
   },
   skeleton: {
     key: 'skeleton',
+    maxHealth: 20,
+    hitbox: {
+      widthPercent: 0.15,
+      heightPercent: 0.15,
+      offsetXPercent: (1 - 0.15) / 2,
+      offsetYPercent: 0.42,
+    },
+    // Share of spawns: 0 before `fromMinute`, then grows per minute up to `maxChance`
+    spawn: { fromMinute: 1, chancePerMinute: 0.05, maxChance: 0.35 },
     animations: {
       idle: {
         key: 'skeleton-idle',
@@ -110,6 +135,10 @@ export const ENEMY = {
 } as const;
 
 export type EnemyKey = keyof typeof ENEMY;
+export type EnemyDef = (typeof ENEMY)[EnemyKey];
+
+// Spawns whenever no `spawn` rule above claims the roll
+export const DEFAULT_ENEMY: EnemyKey = 'slime';
 
 export const PLAYER = {
   soldier: {
