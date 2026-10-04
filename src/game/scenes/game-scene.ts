@@ -3,12 +3,12 @@ import {
   type CharacterKey,
   ENEMY_CONTACT_COOLDOWN_MS,
   ENEMY_CONTACT_DAMAGE,
+  getCharacter,
   XP_GEM_PICKUP_RADIUS,
 } from '@constants';
 import { EnemyManager } from '@entities/enemies/enemy-manager';
 import { Landscape } from '@entities/environment/landscape';
-import type { Player } from '@entities/player/player';
-import { PlayerFactory } from '@entities/player/player-factory';
+import { Player } from '@entities/player/player';
 import { getNearestEnemy } from '@entities/utils/pathfinding';
 import { DevTools } from '@system/dev-tools';
 import { gameClock } from '@system/game-clock';
@@ -47,11 +47,11 @@ export class GameScene extends Phaser.Scene {
     this.pendingLevelUps = 0;
     gameClock.now = 0;
 
-    this.player = PlayerFactory.createPlayer(
+    this.player = new Player(
       this,
       this.scale.width / 2,
       this.scale.height / 2,
-      data.characterType
+      getCharacter(data.characterType)
     );
   }
 
