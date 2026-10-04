@@ -67,12 +67,12 @@ export class EnemyPool {
       // Created off-screen as a placeholder type; `restore` sets the real one on spawn
       const enemy = new Enemy(this.scene, 0, 0, ENEMY[DEFAULT_ENEMY]);
 
-      // Start as inactive
-      enemy.startInactive();
-
       this.allEnemies.push(enemy);
       this.availableEnemies.push(enemy);
       this.enemiesGroup.add(enemy);
+
+      // After the group add: joining a physics group re-enables the body
+      enemy.startInactive();
     }
   }
 
