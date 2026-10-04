@@ -1,8 +1,8 @@
 import {
   AUTO_FIRE_RANGE,
+  type CharacterKey,
   ENEMY_CONTACT_COOLDOWN_MS,
   ENEMY_CONTACT_DAMAGE,
-  type PLAYER,
   XP_GEM_PICKUP_RADIUS,
 } from '@constants';
 import { EnemyManager } from '@entities/enemies/enemy-manager';
@@ -40,7 +40,7 @@ export class GameScene extends Phaser.Scene {
     super({ key: 'GameScene' });
   }
 
-  init(data: { characterType: keyof typeof PLAYER }) {
+  init(data: { characterType: CharacterKey }) {
     this.paused = false;
     this.gameOver = false;
     this.lastContactDamageTime = 0;

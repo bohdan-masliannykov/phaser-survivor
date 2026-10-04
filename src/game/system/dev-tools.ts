@@ -1,4 +1,4 @@
-import { PLAYER } from '@constants';
+import { type CharacterKey, PLAYER } from '@constants';
 import type { GameScene } from '@scenes/game-scene';
 
 const SPAWN_BURST = 50;
@@ -7,10 +7,10 @@ const HELP = '[L] level up  [T] +1 min  [N] spawn 50  [K] kill all  [G] god mode
 /**
  * Dev builds only: `?char=archer` skips character selection.
  */
-export function getDevCharacter(): string | null {
+export function getDevCharacter(): CharacterKey | null {
   if (!import.meta.env.DEV) return null;
   const key = new URLSearchParams(window.location.search).get('char');
-  return Object.values(PLAYER).some((character) => character.key === key) ? key : null;
+  return Object.values(PLAYER).find((character) => character.key === key)?.key ?? null;
 }
 
 /**

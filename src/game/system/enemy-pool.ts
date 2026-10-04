@@ -14,7 +14,7 @@
  * This dramatically improves performance for 1000+ enemies
  */
 
-import type { ENEMY } from '@constants';
+import type { EnemyKey } from '@constants';
 import type { Enemy } from '@entities/enemies/enemy';
 import { EnemyFactory } from '@entities/enemies/enemy-factory';
 import type { GameScene } from '@scenes/game-scene';
@@ -22,7 +22,7 @@ import type { GameScene } from '@scenes/game-scene';
 export interface PoolConfig {
   initialSize: number;
   maxSize: number;
-  enemyTypes: (keyof typeof ENEMY)[];
+  enemyTypes: EnemyKey[];
   onEnemyDeath?: (x: number, y: number, enemyType: string) => void;
 }
 
@@ -89,7 +89,7 @@ export class EnemyPool {
   public acquire(
     x: number,
     y: number,
-    preferredType?: keyof typeof ENEMY,
+    preferredType?: EnemyKey,
     scaling?: EnemyScaling
   ): Enemy | null {
     let enemy: Enemy;

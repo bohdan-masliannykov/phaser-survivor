@@ -22,6 +22,6 @@ export class ArmoredAxeman extends Player {
       }
     );
 
-    this.weaponManager.addWeapon('sword', new Sword(PLAYER.armoredAxeman.weaponStats as any));
+    this.weaponManager.addWeapon('sword', new Sword(PLAYER.armoredAxeman.weaponStats));
   }
 }

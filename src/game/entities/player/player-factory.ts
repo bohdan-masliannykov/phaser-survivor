@@ -1,4 +1,4 @@
-import { PLAYER } from '@constants';
+import { type CharacterKey, PLAYER } from '@constants';
 import { Archer } from './archer';
 import { ArmoredAxeman } from './armored-axeman';
 import { Priest } from './priest';
@@ -6,12 +6,7 @@ import { Soldier } from './soldier';
 import { Wizzard } from './wizzard';
 
 export class PlayerFactory {
-  static createPlayer(
-    scene: Phaser.Scene,
-    x: number,
-    y: number,
-    characterType: keyof typeof PLAYER
-  ) {
+  static createPlayer(scene: Phaser.Scene, x: number, y: number, characterType: CharacterKey) {
     switch (characterType) {
       case PLAYER.soldier.key:
         return new Soldier(scene, x, y);
