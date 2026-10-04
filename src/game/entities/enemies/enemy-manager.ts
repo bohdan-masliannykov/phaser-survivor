@@ -1,7 +1,7 @@
-import { ENEMY_SPAWN_INTERVAL_MS, SPAWN_MARGIN, ENEMY } from '@constants';
-import type { Enemy } from './enemy';
-import { EnemyPool } from '@system/enemy-pool';
+import { ENEMY, ENEMY_SPAWN_INTERVAL_MS, SPAWN_MARGIN } from '@constants';
 import type { GameScene } from '@scenes/game-scene';
+import { EnemyPool } from '@system/enemy-pool';
+import type { Enemy } from './enemy';
 
 export class EnemyManager {
   declare scene: GameScene;
@@ -10,10 +10,7 @@ export class EnemyManager {
   private spawnTimer: Phaser.Time.TimerEvent | null = null;
   onEnemyDeath?: (x: number, y: number, enemyType: string) => void;
 
-  constructor(
-    scene: GameScene,
-    onEnemyDeath?: (x: number, y: number, enemyType: string) => void
-  ) {
+  constructor(scene: GameScene, onEnemyDeath?: (x: number, y: number, enemyType: string) => void) {
     this.scene = scene;
     this.onEnemyDeath = onEnemyDeath;
 

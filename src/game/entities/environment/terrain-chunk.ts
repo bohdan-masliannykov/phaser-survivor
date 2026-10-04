@@ -58,10 +58,7 @@ export class TerrainChunkManager {
     const removeDistance = this.viewDistance + 2;
     for (const [key, chunk] of this.chunks) {
       const [chunkX, chunkY] = key.split(',').map(Number);
-      if (
-        Math.abs(chunkX - cx) > removeDistance ||
-        Math.abs(chunkY - cy) > removeDistance
-      ) {
+      if (Math.abs(chunkX - cx) > removeDistance || Math.abs(chunkY - cy) > removeDistance) {
         for (const obj of chunk.objects) obj.destroy();
         this.chunks.delete(key);
       }
@@ -128,8 +125,7 @@ export class TerrainChunkManager {
       for (let j = 0; j < count; j++) {
         const fx = baseX + (chunkRng(cx, cy, i * 10 + j + 2000) - 0.5) * 40;
         const fy = baseY + (chunkRng(cx, cy, i * 10 + j + 3000) - 0.5) * 40;
-        const flowerKey =
-          FLOWER_KEYS[Math.floor(chunkRng(cx, cy, i * 10 + j + 4000) * 3)];
+        const flowerKey = FLOWER_KEYS[Math.floor(chunkRng(cx, cy, i * 10 + j + 4000) * 3)];
         const flower = this.scene.add
           .image(fx, fy, flowerKey)
           .setScale(1.5 + chunkRng(cx, cy, i * 10 + j + 5000) * 0.5)

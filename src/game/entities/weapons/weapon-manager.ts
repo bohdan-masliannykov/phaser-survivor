@@ -1,6 +1,6 @@
 import type { Enemy } from '@entities/enemies/enemy';
-import type { Weapon } from './weapon';
 import type { Player } from '@entities/player/player';
+import type { Weapon } from './weapon';
 
 export class WeaponManager {
   private weapons: Map<string, Weapon> = new Map();

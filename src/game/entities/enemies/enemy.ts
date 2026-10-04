@@ -16,16 +16,7 @@ export abstract class Enemy extends GameObject {
   ) {
     const rndScale = Phaser.Math.Between(20, 23) / 10;
 
-    super(
-      scene,
-      x,
-      y,
-      texture,
-      ENEMY_SPEED,
-      rndScale,
-      healthOptions,
-      animations
-    );
+    super(scene, x, y, texture, ENEMY_SPEED, rndScale, healthOptions, animations);
 
     this.hitboxConfig = hitboxConfig;
     this.updateBodyForScale(false, hitboxConfig);
@@ -56,8 +47,7 @@ export abstract class Enemy extends GameObject {
     // Separation
     let sepX = 0;
     let sepY = 0;
-    const r2 =
-      Enemy.SEPARATION_RADIUS * Enemy.SEPARATION_RADIUS;
+    const r2 = Enemy.SEPARATION_RADIUS * Enemy.SEPARATION_RADIUS;
 
     for (const other of allEnemies) {
       if (other === this) continue;

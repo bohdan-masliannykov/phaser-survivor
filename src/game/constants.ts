@@ -17,11 +17,7 @@ export const AUTO_FIRE_RANGE = 400; // weapon engagement range
  * @param framesInRow - Number of frames in the current row
  * @param rowIndex - The row number (0-based)
  */
-export function getRowFrameRange(
-  columnsPerRow: number,
-  framesInRow: number,
-  rowIndex: number
-) {
+export function getRowFrameRange(columnsPerRow: number, framesInRow: number, rowIndex: number) {
   const start = rowIndex * columnsPerRow;
   const end = start + framesInRow - 1;
   return { start, end };
@@ -37,10 +33,8 @@ export const XP_PER_ENEMY: Record<string, number> = {
   skeleton: 2,
 };
 export const XP_THRESHOLDS = [
-  3, 6, 12, 20, 35, 55, 80, 110, 150, 200, 260, 330, 400, 470, 550,
-  640, 740, 850, 970, 1100,
+  3, 6, 12, 20, 35, 55, 80, 110, 150, 200, 260, 330, 400, 470, 550, 640, 740, 850, 970, 1100,
 ]; // XP needed to reach level 2, 3, 4, ...
-
 
 // Difficulty scaling
 export const DIFFICULTY_INTERVAL_MS = 30_000; // check every 30s for smoother curve

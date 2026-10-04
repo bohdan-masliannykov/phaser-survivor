@@ -78,9 +78,7 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    const norm = Math.sqrt(
-      directions.x * directions.x + directions.y * directions.y
-    );
+    const norm = Math.sqrt(directions.x * directions.x + directions.y * directions.y);
 
     if (norm > 0) {
       const vx = (directions.x / (norm || 1)) * this.speed;
@@ -92,10 +90,7 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
 
     // Update health bar position to follow sprite
     if (this.healthBar && this.body) {
-      this.healthBar.setPosition(
-        this.body.center.x,
-        this.body.bottom + this.barOffsetY
-      );
+      this.healthBar.setPosition(this.body.center.x, this.body.bottom + this.barOffsetY);
     }
   }
 
@@ -141,8 +136,7 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
     const frameWidth = this.width / this.scaleX;
     const frameHeight = this.height / this.scaleY;
 
-    const { widthPercent, heightPercent, offsetXPercent, offsetYPercent } =
-      config;
+    const { widthPercent, heightPercent, offsetXPercent, offsetYPercent } = config;
 
     const bodyWidth = frameWidth * widthPercent * this.scaleX;
     const bodyHeight = frameHeight * heightPercent * this.scaleY;
@@ -162,16 +156,10 @@ export class GameObject extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  releaseObjectWithAnimation(
-    animationKey?: string,
-    callback?: () => void
-  ): void {
-    this.play(animationKey ?? this.animations.death).once(
-      'animationcomplete',
-      () => {
-        this.healthBar?.setVisible(false);
-        callback?.();
-      }
-    );
+  releaseObjectWithAnimation(animationKey?: string, callback?: () => void): void {
+    this.play(animationKey ?? this.animations.death).once('animationcomplete', () => {
+      this.healthBar?.setVisible(false);
+      callback?.();
+    });
   }
 }

@@ -1,8 +1,8 @@
 import type { Player } from '@entities/player/player';
-import type { FireWand } from '@entities/weapons/fire-wand';
-import type { Bow } from '@entities/weapons/bow';
-import type { Sword } from '@entities/weapons/sword';
 import type { Aura } from '@entities/weapons/aura';
+import type { Bow } from '@entities/weapons/bow';
+import type { FireWand } from '@entities/weapons/fire-wand';
+import type { Sword } from '@entities/weapons/sword';
 
 export interface UpgradeOption {
   id: string;
@@ -16,8 +16,7 @@ export interface UpgradeOption {
 const MIN_COOLDOWN_MS = 400;
 
 const hasRangedWeapon = (player: Player) =>
-  !!player.weaponManager.getWeapon('fire-wand') ||
-  !!player.weaponManager.getWeapon('bow');
+  !!player.weaponManager.getWeapon('fire-wand') || !!player.weaponManager.getWeapon('bow');
 
 const ALL_UPGRADES: UpgradeOption[] = [
   // ── Universal upgrades ──────────────────────────────

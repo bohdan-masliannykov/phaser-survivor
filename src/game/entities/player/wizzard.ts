@@ -1,6 +1,6 @@
 import { PLAYER } from '@constants';
-import { Player } from './player';
 import { FireWand } from '@entities/weapons/fire-wand';
+import { Player } from './player';
 
 export class Wizzard extends Player {
   constructor(scene: Phaser.Scene, x: number, y: number) {

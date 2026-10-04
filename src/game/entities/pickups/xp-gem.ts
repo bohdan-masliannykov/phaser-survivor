@@ -1,8 +1,4 @@
-import {
-  XP_GEM_PICKUP_RADIUS,
-  XP_GEM_COLLECT_RADIUS,
-  XP_GEM_MAGNETIC_SPEED,
-} from '@constants';
+import { XP_GEM_COLLECT_RADIUS, XP_GEM_MAGNETIC_SPEED, XP_GEM_PICKUP_RADIUS } from '@constants';
 
 const BOB_AMPLITUDE = 2;
 const BOB_SPEED = 3;
@@ -80,9 +76,10 @@ export class XpGem extends Phaser.GameObjects.Image {
     this.y = this.baseY + Math.sin(time * BOB_SPEED + this.phaseOffset) * BOB_AMPLITUDE;
 
     // Pulsing glow
-    const glowAlpha = GLOW_ALPHA_MIN +
+    const glowAlpha =
+      GLOW_ALPHA_MIN +
       (GLOW_ALPHA_MAX - GLOW_ALPHA_MIN) *
-      (0.5 + 0.5 * Math.sin(time * GLOW_PULSE_SPEED + this.phaseOffset));
+        (0.5 + 0.5 * Math.sin(time * GLOW_PULSE_SPEED + this.phaseOffset));
     this.glow.setAlpha(glowAlpha);
     this.glow.setPosition(this.x, this.y);
 

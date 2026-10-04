@@ -1,14 +1,13 @@
 import { ENEMY } from '@constants';
-import { Orc } from './orc';
-import { Slime } from './slime';
-import { Skeleton } from './skeleton';
 import type { Enemy } from './enemy';
+import { Orc } from './orc';
+import { Skeleton } from './skeleton';
+import { Slime } from './slime';
 
 export class EnemyFactory {
   static createRandomEnemy(scene: Phaser.Scene, x: number, y: number): Enemy {
     const enemyTypes = Object.keys(ENEMY) as (keyof typeof ENEMY)[];
-    const randomType =
-      enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+    const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
 
     return this.createEnemyByType(scene, x, y, randomType);
   }
