@@ -24,12 +24,7 @@ export class EnemyManager {
     this.spawnTimer = this.scene.time.addEvent({
       delay: ENEMY_SPAWN_INTERVAL_MS,
       loop: true,
-      callback: () => {
-        const enemy = this.spawnEnemy();
-        if (!enemy) {
-          console.warn('⚠️ Failed to spawn enemy - pool exhausted');
-        }
-      },
+      callback: () => this.spawnEnemy(),
     });
 
     // Enemy-enemy collisions for separation, no player collider — enemies overlap player
@@ -129,16 +124,8 @@ export class EnemyManager {
   updateSpawnRate(multiplier: number): void {
     if (!this.spawnTimer) return;
     const newDelay = Math.max(200, Math.round(ENEMY_SPAWN_INTERVAL_MS * multiplier));
-    if (newDelay !== this.spawnTimer.delay) {
-      this.spawnTimer.destroy();
-      this.spawnTimer = this.scene.time.addEvent({
-        delay: newDelay,
-        loop: true,
-        callback: () => {
-          this.spawnEnemy();
-        },
-      });
-    }
+    // Speed the existing timer up instead of recreating it, which would restart its countdown
+    this.spawnTimer.timeScale = ENEMY_SPAWN_INTERVAL_MS / newDelay;
   }
 
   /**
