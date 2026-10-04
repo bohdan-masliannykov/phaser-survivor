@@ -3,6 +3,9 @@ import { GameObject, type HitboxConfig } from '@entities/core/game-object';
 
 export abstract class Enemy extends GameObject {
   readonly id: string = Phaser.Utils.String.UUID();
+  /** Fired the moment health reaches zero, before the death animation. */
+  onDying?: () => void;
+  /** Fired when the death animation has finished. */
   onDeath?: () => void;
 
   constructor(
@@ -85,6 +88,8 @@ export abstract class Enemy extends GameObject {
     knockbackForce: number,
     effectType?: 'default' | 'burn'
   ): void {
+    if (this.isDead()) return;
+
     this.takeDamage(amount);
     this.applyKnockback(fromX, fromY, knockbackForce);
 
@@ -95,6 +100,9 @@ export abstract class Enemy extends GameObject {
     }
 
     if (this.isDead()) {
+      this.setVelocity(0, 0);
+      this.setBodyEnabled(false);
+      this.onDying?.();
       this.releaseObjectWithAnimation(undefined, () => this.onDeath?.());
     }
   }
@@ -128,6 +136,7 @@ export abstract class Enemy extends GameObject {
   restore(x: number, y: number): void {
     this.setPosition(x, y);
     this.setVelocity(0, 0);
+    this.setBodyEnabled(true);
 
     this.heal(this.maxHealth);
     this.healthBar?.showBar();
@@ -135,6 +144,10 @@ export abstract class Enemy extends GameObject {
     this.setActive(true);
     this.setVisible(true);
     this.playDefaultAnimation();
+  }
+
+  private setBodyEnabled(enabled: boolean): void {
+    (this.body as Phaser.Physics.Arcade.Body).enable = enabled;
   }
 
   startInactive(): void {
