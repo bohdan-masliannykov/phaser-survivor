@@ -2,6 +2,7 @@ import { PROJECTILE_HIT_RADIUS } from '@constants';
 import type { Enemy } from '@entities/enemies/enemy';
 import type { Player } from '@entities/player/player';
 import { Arrow } from '@entities/projectiles/arrow';
+import { gameClock } from '@system/game-clock';
 import { Weapon } from './weapon';
 
 interface BowStats {
@@ -43,10 +44,10 @@ export class Bow extends Weapon {
   }
 
   attack(nearestEnemy: Enemy, player: Player): void {
-    if (!this.isOffCooldown(player.scene.time.now)) {
+    if (!this.isOffCooldown(gameClock.now)) {
       return;
     }
-    this.updateCooldown(player.scene.time.now);
+    this.updateCooldown(gameClock.now);
 
     const numProjectiles = this.projectileCount;
     if (numProjectiles === 1) {

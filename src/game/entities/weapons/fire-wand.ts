@@ -2,6 +2,7 @@ import { AUTO_FIRE_RANGE, PROJECTILE_HIT_RADIUS } from '@constants';
 import type { Enemy } from '@entities/enemies/enemy';
 import type { Player } from '@entities/player/player';
 import { Fireball } from '@entities/projectiles/fireball';
+import { gameClock } from '@system/game-clock';
 import { Weapon } from './weapon';
 
 interface FireWandStats {
@@ -43,10 +44,10 @@ export class FireWand extends Weapon {
   }
 
   attack(nearestEnemy: Enemy, player: Player, allEnemies?: Enemy[]): void {
-    if (!this.isOffCooldown(player.scene.time.now)) {
+    if (!this.isOffCooldown(gameClock.now)) {
       return;
     }
-    this.updateCooldown(player.scene.time.now);
+    this.updateCooldown(gameClock.now);
 
     // Sort enemies by distance and pick unique targets for each projectile
     const targets = this.pickTargets(player, nearestEnemy, allEnemies ?? []);

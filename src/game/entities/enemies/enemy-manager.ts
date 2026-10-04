@@ -129,14 +129,6 @@ export class EnemyManager {
     }
   }
 
-  pauseSpawning(): void {
-    if (this.spawnTimer) this.spawnTimer.paused = true;
-  }
-
-  resumeSpawning(): void {
-    if (this.spawnTimer) this.spawnTimer.paused = false;
-  }
-
   updateSpawnRate(multiplier: number): void {
     if (!this.spawnTimer) return;
     const newDelay = Math.max(200, Math.round(ENEMY_SPAWN_INTERVAL_MS * multiplier));

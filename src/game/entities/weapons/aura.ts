@@ -1,5 +1,6 @@
 import type { Enemy } from '@entities/enemies/enemy';
 import type { Player } from '@entities/player/player';
+import { gameClock } from '@system/game-clock';
 import { Weapon } from './weapon';
 
 interface AuraStats {
@@ -73,7 +74,7 @@ export class Aura extends Weapon {
     // Update visual position
     this.setAuraPosition(player.x, player.y);
 
-    const now = player.scene.time.now;
+    const now = gameClock.now;
 
     // Check if it's time to deal damage
     if (now - this.lastDamageTime < this.damageTickIntervalMs) {

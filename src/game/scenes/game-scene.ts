@@ -11,6 +11,7 @@ import type { Player } from '@entities/player/player';
 import { PlayerFactory } from '@entities/player/player-factory';
 import { getNearestEnemy } from '@entities/utils/pathfinding';
 import { DevTools } from '@system/dev-tools';
+import { gameClock } from '@system/game-clock';
 import { InputSystem } from '@system/input-system';
 import { ProgressionSystem } from '@system/progression-system';
 import { XpGemPool } from '@system/xp-gem-pool';
@@ -44,6 +45,7 @@ export class GameScene extends Phaser.Scene {
     this.gameOver = false;
     this.lastContactDamageTime = 0;
     this.pendingLevelUps = 0;
+    gameClock.now = 0;
 
     this.player = PlayerFactory.createPlayer(
       this,
@@ -100,6 +102,8 @@ export class GameScene extends Phaser.Scene {
     if (this.gameOver) return;
     if (this.paused) return;
 
+    gameClock.now += delta;
+
     // Progression timer + difficulty
     this.progression.update(delta);
     this.enemyManager.updateSpawnRate(this.progression.spawnDelayMultiplier);
@@ -120,7 +124,7 @@ export class GameScene extends Phaser.Scene {
 
     // Auto-fire
     const enemies = this.enemyManager.getEnemies();
-    if (this.player.weaponManager.hasReadyWeapon(this.time.now)) {
+    if (this.player.weaponManager.hasReadyWeapon(gameClock.now)) {
       const nearest = getNearestEnemy(this.player.x, this.player.y, enemies, AUTO_FIRE_RANGE);
 
       if (nearest?.active && nearest?.visible) {
@@ -144,7 +148,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleContactDamage(): void {
-    if (this.time.now - this.lastContactDamageTime < ENEMY_CONTACT_COOLDOWN_MS) return;
+    if (gameClock.now - this.lastContactDamageTime < ENEMY_CONTACT_COOLDOWN_MS) return;
 
     const enemies = this.enemyManager.getEnemies();
     const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
@@ -162,7 +166,7 @@ export class GameScene extends Phaser.Scene {
       if (dist < touchDist) {
         const scaledDamage = Math.round(ENEMY_CONTACT_DAMAGE * this.progression.damageMultiplier);
         this.player.takeDamage(scaledDamage);
-        this.lastContactDamageTime = this.time.now;
+        this.lastContactDamageTime = gameClock.now;
 
         // Flash player red
         this.player.setTint(0xff4444);
@@ -172,17 +176,26 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  /** Freezes or resumes everything that moves: physics, timers and tweens. */
+  private setPaused(paused: boolean): void {
+    this.paused = paused;
+    this.time.paused = paused;
+    if (paused) {
+      this.physics.pause();
+      this.tweens.pauseAll();
+    } else {
+      this.physics.resume();
+      this.tweens.resumeAll();
+    }
+  }
+
   private togglePause(): void {
     if (this.paused) {
-      this.paused = false;
-      this.physics.resume();
-      this.enemyManager.resumeSpawning();
+      this.setPaused(false);
       for (const el of this.pauseOverlay) el.destroy();
       this.pauseOverlay.length = 0;
     } else {
-      this.paused = true;
-      this.physics.pause();
-      this.enemyManager.pauseSpawning();
+      this.setPaused(true);
 
       const cx = this.scale.width / 2;
       const cy = this.scale.height / 2;
@@ -212,9 +225,7 @@ export class GameScene extends Phaser.Scene {
     this.pendingLevelUps++;
     if (this.upgradePicker.isVisible()) return;
 
-    this.paused = true;
-    this.physics.pause();
-    this.enemyManager.pauseSpawning();
+    this.setPaused(true);
     this.showNextUpgrade();
   }
 
@@ -226,9 +237,7 @@ export class GameScene extends Phaser.Scene {
         this.showNextUpgrade();
         return;
       }
-      this.paused = false;
-      this.physics.resume();
-      this.enemyManager.resumeSpawning();
+      this.setPaused(false);
     });
   }
 
