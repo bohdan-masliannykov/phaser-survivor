@@ -12,6 +12,7 @@ import { Player } from '@entities/player/player';
 import { getNearestEnemy } from '@entities/utils/pathfinding';
 import { DevTools } from '@system/dev-tools';
 import { gameClock } from '@system/game-clock';
+import { GameEvents } from '@system/game-events';
 import { InputSystem } from '@system/input-system';
 import { ProgressionSystem } from '@system/progression-system';
 import { XpGemPool } from '@system/xp-gem-pool';
@@ -56,15 +57,11 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
-    // Progression
-    this.progression = new ProgressionSystem(() => this.onLevelUp());
+    this.progression = new ProgressionSystem(this.events);
+    this.enemyManager = new EnemyManager(this);
 
-    // Enemy manager with gem drop callback
-    this.enemyManager = new EnemyManager(this, (x, y) => {
-      const xpValue = this.rollGemTier();
-      this.gemPool.spawn(x, y, xpValue);
-      this.progression.addKill();
-    });
+    this.events.on(GameEvents.ENEMY_DIED, this.onEnemyDied, this);
+    this.events.on(GameEvents.LEVEL_UP, this.onLevelUp, this);
 
     this.cameras.main.startFollow(this.player);
     this.cameras.main.roundPixels = true;
@@ -92,6 +89,8 @@ export class GameScene extends Phaser.Scene {
     });
 
     this.events.once('shutdown', () => {
+      this.events.off(GameEvents.ENEMY_DIED, this.onEnemyDied, this);
+      this.events.off(GameEvents.LEVEL_UP, this.onLevelUp, this);
       this.enemyManager.destroy();
       this.gemPool.destroy();
       this.hud.destroy();
@@ -219,6 +218,11 @@ export class GameScene extends Phaser.Scene {
 
       this.pauseOverlay.push(bg, text);
     }
+  }
+
+  private onEnemyDied(x: number, y: number): void {
+    this.gemPool.spawn(x, y, this.rollGemTier());
+    this.progression.addKill();
   }
 
   private onLevelUp(): void {

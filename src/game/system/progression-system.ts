@@ -1,4 +1,5 @@
 import { XP_THRESHOLDS } from '@constants';
+import { GameEvents } from './game-events';
 
 export class ProgressionSystem {
   xp: number = 0;
@@ -13,10 +14,10 @@ export class ProgressionSystem {
   speedMultiplier: number = 1;
   spawnDelayMultiplier: number = 1;
 
-  private onLevelUp?: () => void;
+  private events: Phaser.Events.EventEmitter;
 
-  constructor(onLevelUp: () => void) {
-    this.onLevelUp = onLevelUp;
+  constructor(events: Phaser.Events.EventEmitter) {
+    this.events = events;
   }
 
   addXp(amount: number): void {
@@ -25,7 +26,7 @@ export class ProgressionSystem {
     while (this.xp >= this.getXpThreshold()) {
       this.xp -= this.getXpThreshold();
       this.level++;
-      this.onLevelUp?.();
+      this.events.emit(GameEvents.LEVEL_UP);
     }
   }
 
