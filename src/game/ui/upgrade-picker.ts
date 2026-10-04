@@ -1,140 +1,7 @@
 import type { Player } from '@entities/player/player';
-import type { Aura } from '@entities/weapons/aura';
-import { ProjectileWeapon } from '@entities/weapons/projectile-weapon';
-import type { Sword } from '@entities/weapons/sword';
+import { rollUpgrades } from '../upgrades';
 
-interface UpgradeOption {
-  id: string;
-  name: string;
-  description: string;
-  color: number;
-  canApply: (player: Player) => boolean;
-  apply: (player: Player) => void;
-}
-
-const MIN_COOLDOWN_MS = 400;
-
-const getProjectileWeapons = (player: Player) =>
-  player.weaponManager.getAllWeapons().filter((weapon) => weapon instanceof ProjectileWeapon);
-
-const hasRangedWeapon = (player: Player) => getProjectileWeapons(player).length > 0;
-
-const ALL_UPGRADES: UpgradeOption[] = [
-  // ── Universal upgrades ──────────────────────────────
-  {
-    id: 'damage_up',
-    name: 'Damage Up',
-    description: '+20% weapon damage',
-    color: 0xff4444,
-    canApply: () => true,
-    apply: (player) => {
-      for (const weapon of player.weaponManager.getAllWeapons()) {
-        weapon.scaleDamage(1.2);
-      }
-    },
-  },
-  {
-    id: 'speed_up',
-    name: 'Speed Up',
-    description: '+10% move speed',
-    color: 0x44aaff,
-    canApply: () => true,
-    apply: (player) => {
-      player.speed = Math.round(player.speed * 1.1);
-    },
-  },
-  {
-    id: 'max_hp',
-    name: 'Max HP Up',
-    description: '+25 max HP',
-    color: 0x44ff44,
-    canApply: () => true,
-    apply: (player) => {
-      player.maxHealth += 25;
-      player.heal(25);
-    },
-  },
-  {
-    id: 'heal',
-    name: 'Heal',
-    description: 'Restore 30% HP',
-    color: 0x66ff66,
-    canApply: (player) => player.health < player.maxHealth,
-    apply: (player) => {
-      player.heal(Math.round(player.maxHealth * 0.3));
-    },
-  },
-  {
-    id: 'cooldown_down',
-    name: 'Cooldown Down',
-    description: '-10% weapon cooldown',
-    color: 0xffaa44,
-    canApply: () => true,
-    apply: (player) => {
-      for (const weapon of player.weaponManager.getAllWeapons()) {
-        weapon.reduceCooldown(0.9, MIN_COOLDOWN_MS);
-      }
-    },
-  },
-  {
-    id: 'pickup_range',
-    name: 'Magnet',
-    description: '+30% gem pickup range',
-    color: 0x88ffaa,
-    canApply: () => true,
-    apply: (player) => {
-      player.pickupRadiusMultiplier = (player.pickupRadiusMultiplier ?? 1) * 1.3;
-    },
-  },
-
-  // ── Projectile upgrades (any projectile weapon) ─────
-  {
-    id: 'extra_projectile',
-    name: 'Extra Projectile',
-    description: '+1 projectile',
-    color: 0xff8800,
-    canApply: hasRangedWeapon,
-    apply: (player) => {
-      for (const weapon of getProjectileWeapons(player)) weapon.addProjectile();
-    },
-  },
-  {
-    id: 'pierce_up',
-    name: 'Pierce Up',
-    description: '+1 pierce',
-    color: 0xcc44ff,
-    canApply: hasRangedWeapon,
-    apply: (player) => {
-      for (const weapon of getProjectileWeapons(player)) weapon.addPierce();
-    },
-  },
-
-  // ── Sword upgrades ──────────────────────────────────
-  {
-    id: 'aoe_up',
-    name: 'Slash Range Up',
-    description: '+20% sword radius',
-    color: 0xffdd44,
-    canApply: (player) => !!player.weaponManager.getWeapon('sword'),
-    apply: (player) => {
-      const sword = player.weaponManager.getWeapon('sword') as Sword | undefined;
-      if (sword) sword.increaseRadius(1.2);
-    },
-  },
-
-  // ── Aura upgrades ──────────────────────────────────
-  {
-    id: 'aura_radius',
-    name: 'Aura Radius',
-    description: '+20px aura radius',
-    color: 0xffaa88,
-    canApply: (player) => !!player.weaponManager.getWeapon('aura'),
-    apply: (player) => {
-      const aura = player.weaponManager.getWeapon('aura') as Aura | undefined;
-      if (aura) aura.addRadius();
-    },
-  },
-];
+const CHOICE_COUNT = 3;
 
 export class UpgradePicker {
   private scene: Phaser.Scene;
@@ -148,9 +15,7 @@ export class UpgradePicker {
   show(player: Player, onPicked: () => void): void {
     this.onPicked = onPicked;
 
-    const applicable = ALL_UPGRADES.filter((u) => u.canApply(player));
-    const shuffled = Phaser.Utils.Array.Shuffle([...applicable]);
-    const choices = shuffled.slice(0, 3);
+    const choices = rollUpgrades(player, CHOICE_COUNT);
 
     const cx = this.scene.scale.width / 2;
     const cy = this.scene.scale.height / 2;
