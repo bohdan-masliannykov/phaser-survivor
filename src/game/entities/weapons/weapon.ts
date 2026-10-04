@@ -8,8 +8,6 @@ export abstract class Weapon {
   protected _lastAttackTime: number = 0;
   protected projectileCount: number = 1;
 
-  constructor() {}
-
   getDamage(): number {
     return Phaser.Math.Between(this.minDamage, this.maxDamage);
   }
