@@ -135,8 +135,9 @@ export class EnemyPool {
    * Release all active enemies back to pool
    */
   public releaseAll(): void {
-    const activeList = Array.from(this.activeEnemies);
-    activeList.forEach((enemy) => this.release(enemy));
+    for (const enemy of Array.from(this.activeEnemies)) {
+      this.release(enemy);
+    }
   }
 
   /**
@@ -196,7 +197,9 @@ export class EnemyPool {
     this.activeCache.length = 0;
     this.activeCacheDirty = false;
     this.availableEnemies.length = 0;
-    this.allEnemies.forEach((enemy) => enemy.destroy());
+    for (const enemy of this.allEnemies) {
+      enemy.destroy();
+    }
     this.allEnemies.length = 0;
     this.enemiesGroup.destroy();
   }
