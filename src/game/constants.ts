@@ -225,6 +225,37 @@ export const PLAYER = {
       basePierce: 1,
     },
   },
+  armoredAxeman: {
+    key: 'armored-axeman',
+    weapon: 'sword',
+    animations: {
+      idle: {
+        key: 'armored-axeman-idle',
+        ...getRowFrameRange(12, 6, 0),
+        frameRate: 8,
+        repeat: -1,
+      },
+      walk: {
+        key: 'armored-axeman-walk',
+        ...getRowFrameRange(12, 8, 1),
+        frameRate: 13,
+        repeat: -1,
+      },
+      death: {
+        key: 'armored-axeman-death',
+        ...getRowFrameRange(12, 4, 6),
+        frameRate: 14,
+        repeat: 0,
+      },
+    },
+    weaponStats: {
+      minDamage: 10,
+      maxDamage: 16,
+      cooldownMs: 1400,
+      radius: 90,
+      slashDuration: 350,
+    },
+  },
   priest: {
     key: 'priest',
     weapon: 'aura',
