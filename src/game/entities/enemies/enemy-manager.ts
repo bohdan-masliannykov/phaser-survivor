@@ -1,4 +1,10 @@
-import { ENEMY, ENEMY_SPAWN_INTERVAL_MS, type EnemyKey, SPAWN_MARGIN } from '@constants';
+import {
+  DEFAULT_ENEMY,
+  ENEMY,
+  ENEMY_SPAWN_INTERVAL_MS,
+  type EnemyKey,
+  SPAWN_MARGIN,
+} from '@constants';
 import type { GameScene } from '@scenes/game-scene';
 import { EnemyPool } from '@system/enemy-pool';
 import type { Enemy } from './enemy';
@@ -17,7 +23,6 @@ export class EnemyManager {
     this.enemyPool = new EnemyPool(scene, {
       initialSize: 50,
       maxSize: 1000,
-      enemyTypes: Object.keys(ENEMY) as EnemyKey[],
       onEnemyDeath,
     });
   }
@@ -92,24 +97,23 @@ export class EnemyManager {
   }
 
   /**
-   * Weighted enemy type selection based on elapsed time.
-   * Min 0-1: 100% slimes
-   * Min 1-3: skeletons start appearing (~10%)
-   * Min 3+: orcs start appearing, skeletons increase, slimes decrease
+   * Picks an enemy type from the `spawn` rules in the ENEMY table.
+   * Each rule claims a share of the roll that grows with elapsed time;
+   * whatever is left goes to DEFAULT_ENEMY.
    */
   private rollEnemyType(): EnemyKey {
     const minutes = this.scene.progression.elapsedMs / 60_000;
+    let roll = Math.random();
 
-    if (minutes < 1) return 'slime';
+    for (const def of Object.values(ENEMY)) {
+      if (!('spawn' in def)) continue;
+      const { fromMinute, chancePerMinute, maxChance } = def.spawn;
+      const chance = Phaser.Math.Clamp((minutes - fromMinute) * chancePerMinute, 0, maxChance);
+      if (roll < chance) return def.key;
+      roll -= chance;
+    }
 
-    const skeletonChance = Math.min(0.35, (minutes - 1) * 0.05);
-    const orcChance = minutes < 3 ? 0 : Math.min(0.25, (minutes - 3) * 0.03);
-    const slimeChance = 1 - skeletonChance - orcChance;
-
-    const roll = Math.random();
-    if (roll < slimeChance) return 'slime';
-    if (roll < slimeChance + skeletonChance) return 'skeleton';
-    return 'orc';
+    return DEFAULT_ENEMY;
   }
 
   /**

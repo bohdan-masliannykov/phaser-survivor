@@ -14,15 +14,13 @@
  * This dramatically improves performance for 1000+ enemies
  */
 
-import type { EnemyKey } from '@constants';
-import type { Enemy } from '@entities/enemies/enemy';
-import { EnemyFactory } from '@entities/enemies/enemy-factory';
+import { DEFAULT_ENEMY, ENEMY, type EnemyKey } from '@constants';
+import { Enemy } from '@entities/enemies/enemy';
 import type { GameScene } from '@scenes/game-scene';
 
 export interface PoolConfig {
   initialSize: number;
   maxSize: number;
-  enemyTypes: EnemyKey[];
   onEnemyDeath?: (x: number, y: number, enemyType: string) => void;
 }
 
@@ -66,12 +64,8 @@ export class EnemyPool {
    */
   private initializePool(): void {
     for (let i = 0; i < this.poolConfig.initialSize; i++) {
-      // Randomly distribute among enemy types
-      const randomType =
-        this.poolConfig.enemyTypes[Math.floor(Math.random() * this.poolConfig.enemyTypes.length)];
-
-      // Create enemy at dummy position (0, 0) - will be moved when activated
-      const enemy = EnemyFactory.createEnemyByType(this.scene, 0, 0, randomType);
+      // Created off-screen as a placeholder type; `restore` sets the real one on spawn
+      const enemy = new Enemy(this.scene, 0, 0, ENEMY[DEFAULT_ENEMY]);
 
       // Start as inactive
       enemy.startInactive();
@@ -86,36 +80,18 @@ export class EnemyPool {
    * Get an enemy from the pool and activate it at a specific position
    * Returns null if pool is exhausted
    */
-  public acquire(
-    x: number,
-    y: number,
-    preferredType?: EnemyKey,
-    scaling?: EnemyScaling
-  ): Enemy | null {
-    let enemy: Enemy;
+  public acquire(x: number, y: number, type: EnemyKey, scaling?: EnemyScaling): Enemy | null {
+    let enemy = this.availableEnemies.pop();
 
-    // Find a matching type in the pool, or fall back to any available
-    const matchIdx = preferredType
-      ? this.availableEnemies.findIndex((e) => e.texture.key === preferredType)
-      : -1;
+    if (!enemy) {
+      if (this.allEnemies.length >= this.poolConfig.maxSize) return null;
 
-    if (matchIdx >= 0) {
-      enemy = this.availableEnemies.splice(matchIdx, 1)[0];
-    } else if (this.allEnemies.length < this.poolConfig.maxSize) {
-      const type =
-        preferredType ??
-        this.poolConfig.enemyTypes[Math.floor(Math.random() * this.poolConfig.enemyTypes.length)];
-
-      enemy = EnemyFactory.createEnemyByType(this.scene, x, y, type);
+      enemy = new Enemy(this.scene, x, y, ENEMY[type]);
       this.allEnemies.push(enemy);
       this.enemiesGroup.add(enemy);
-
-      console.warn(`⚠️ Pool expanded! Now at ${this.allEnemies.length}/${this.poolConfig.maxSize}`);
-    } else {
-      return null;
     }
 
-    enemy.restore(x, y, scaling?.hpMultiplier, scaling?.speedMultiplier);
+    enemy.restore(x, y, ENEMY[type], scaling?.hpMultiplier, scaling?.speedMultiplier);
     this.activeEnemies.add(enemy);
     this.activeCacheDirty = true;
     enemy.onDying = () => {
