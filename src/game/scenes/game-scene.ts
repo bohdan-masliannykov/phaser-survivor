@@ -33,7 +33,7 @@ export class GameScene extends Phaser.Scene {
 
   private paused = false;
   private gameOver = false;
-  private lastContactDamageTime = 0;
+  private lastContactDamageTime = Number.NEGATIVE_INFINITY;
   private pendingLevelUps = 0;
   private pauseOverlay: Phaser.GameObjects.GameObject[] = [];
 
@@ -44,9 +44,13 @@ export class GameScene extends Phaser.Scene {
   init(data: { characterType: CharacterKey }) {
     this.paused = false;
     this.gameOver = false;
-    this.lastContactDamageTime = 0;
+    this.lastContactDamageTime = Number.NEGATIVE_INFINITY;
     this.pendingLevelUps = 0;
     gameClock.now = 0;
+
+    // The clock and tween manager outlive a restart, so a pause must not carry over
+    this.time.paused = false;
+    this.tweens.resumeAll();
 
     this.player = new Player(
       this,

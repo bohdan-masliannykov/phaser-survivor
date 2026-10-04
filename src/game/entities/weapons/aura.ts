@@ -13,7 +13,7 @@ interface AuraStats {
 
 export class Aura extends Weapon {
   auraRadius: number;
-  lastDamageTime: number = 0;
+  lastDamageTime: number = Number.NEGATIVE_INFINITY;
   damageTickIntervalMs: number;
   private auraGraphics?: Phaser.GameObjects.Graphics;
 
