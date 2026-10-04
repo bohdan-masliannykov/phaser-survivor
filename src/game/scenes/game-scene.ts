@@ -1,21 +1,21 @@
-import { Player } from '@entities/player/player';
-import { Landscape } from '@entities/environment/landscape';
-import { InputSystem } from '@system/input-system';
-import { PlayerFactory } from '@entities/player/player-factory';
-import { EnemyManager } from '@entities/enemies/enemy-manager';
-import { getNearestEnemy } from '@entities/utils/pathfinding';
-import { XpGemPool } from '@system/xp-gem-pool';
-import { ProgressionSystem } from '@system/progression-system';
-import { GameHud } from '@ui/game-hud';
-import { UpgradePicker } from '@ui/upgrade-picker';
-import { GameOverScreen } from '@ui/game-over-screen';
 import {
+  AUTO_FIRE_RANGE,
+  ENEMY_CONTACT_COOLDOWN_MS,
+  ENEMY_CONTACT_DAMAGE,
   type PLAYER,
   XP_GEM_PICKUP_RADIUS,
-  ENEMY_CONTACT_DAMAGE,
-  ENEMY_CONTACT_COOLDOWN_MS,
-  AUTO_FIRE_RANGE,
 } from '@constants';
+import { EnemyManager } from '@entities/enemies/enemy-manager';
+import { Landscape } from '@entities/environment/landscape';
+import { Player } from '@entities/player/player';
+import { PlayerFactory } from '@entities/player/player-factory';
+import { getNearestEnemy } from '@entities/utils/pathfinding';
+import { InputSystem } from '@system/input-system';
+import { ProgressionSystem } from '@system/progression-system';
+import { XpGemPool } from '@system/xp-gem-pool';
+import { GameHud } from '@ui/game-hud';
+import { GameOverScreen } from '@ui/game-over-screen';
+import { UpgradePicker } from '@ui/upgrade-picker';
 
 export class GameScene extends Phaser.Scene {
   inputSystem!: InputSystem;
@@ -64,13 +64,7 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.startFollow(this.player);
     this.cameras.main.roundPixels = true;
 
-    this.landscape = new Landscape(
-      this,
-      0,
-      0,
-      this.scale.width,
-      this.scale.height
-    );
+    this.landscape = new Landscape(this, 0, 0, this.scale.width, this.scale.height);
 
     this.inputSystem = new InputSystem(this);
     this.enemyManager.initializeSpawner();
@@ -122,12 +116,7 @@ export class GameScene extends Phaser.Scene {
     // Auto-fire
     const enemies = this.enemyManager.getEnemies();
     if (this.player.weaponManager.hasReadyWeapon(this.time.now)) {
-      const nearest = getNearestEnemy(
-        this.player.x,
-        this.player.y,
-        enemies,
-        AUTO_FIRE_RANGE
-      );
+      const nearest = getNearestEnemy(this.player.x, this.player.y, enemies, AUTO_FIRE_RANGE);
 
       if (nearest?.active && nearest?.visible) {
         this.player.weaponManager.tryAttack(nearest, this.player, enemies);
@@ -166,9 +155,7 @@ export class GameScene extends Phaser.Scene {
       const touchDist = (playerBody.halfWidth + enemyBody.halfWidth) * 0.8;
 
       if (dist < touchDist) {
-        const scaledDamage = Math.round(
-          ENEMY_CONTACT_DAMAGE * this.progression.hpMultiplier
-        );
+        const scaledDamage = Math.round(ENEMY_CONTACT_DAMAGE * this.progression.hpMultiplier);
         this.player.takeDamage(scaledDamage);
         this.lastContactDamageTime = this.time.now;
 

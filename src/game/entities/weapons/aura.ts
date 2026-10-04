@@ -1,6 +1,6 @@
 import type { Enemy } from '@entities/enemies/enemy';
-import { Weapon } from './weapon';
 import type { Player } from '@entities/player/player';
+import { Weapon } from './weapon';
 
 interface AuraStats {
   minDamage: number;

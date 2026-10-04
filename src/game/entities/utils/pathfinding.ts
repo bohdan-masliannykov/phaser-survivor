@@ -10,12 +10,7 @@ export function getNearestEnemy(
   let minDistance = maxDistance;
 
   for (const enemy of enemies) {
-    const distance = Phaser.Math.Distance.Between(
-      playerX,
-      playerY,
-      enemy.x,
-      enemy.y
-    );
+    const distance = Phaser.Math.Distance.Between(playerX, playerY, enemy.x, enemy.y);
 
     if (distance < minDistance) {
       minDistance = distance;

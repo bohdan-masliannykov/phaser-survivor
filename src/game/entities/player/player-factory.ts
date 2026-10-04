@@ -1,9 +1,9 @@
 import { PLAYER } from '@constants';
-import { Soldier } from './soldier';
-import { ArmoredAxeman } from './armored-axeman';
-import { Wizzard } from './wizzard';
 import { Archer } from './archer';
+import { ArmoredAxeman } from './armored-axeman';
 import { Priest } from './priest';
+import { Soldier } from './soldier';
+import { Wizzard } from './wizzard';
 
 export class PlayerFactory {
   static createPlayer(

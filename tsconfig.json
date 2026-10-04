@@ -3,15 +3,8 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    "lib": [
-      "ESNext",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "types": [
-      "vite/client",
-      "node"
-    ],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["vite/client", "node"],
     "skipLibCheck": true,
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -29,28 +22,13 @@
     "noImplicitAny": true,
     "baseUrl": ".",
     "paths": {
-      "@scenes/*": [
-        "src/game/scenes/*"
-      ],
-      "@entities/*": [
-        "src/game/entities/*"
-      ],
-      "@system/*": [
-        "src/game/system/*"
-      ],
-      "@utils/*": [
-        "src/game/utils/*"
-      ],
-      "@constants": [
-        "src/game/constants.ts"
-      ],
-      "@ui/*": [
-        "src/game/ui/*"
-      ],
+      "@scenes/*": ["src/game/scenes/*"],
+      "@entities/*": ["src/game/entities/*"],
+      "@system/*": ["src/game/system/*"],
+      "@utils/*": ["src/game/utils/*"],
+      "@constants": ["src/game/constants.ts"],
+      "@ui/*": ["src/game/ui/*"]
     }
   },
-  "include": [
-    "src",
-    "vite.config.ts"
-  ],
+  "include": ["src", "vite.config.ts"]
 }

@@ -52,8 +52,7 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     const frameWidth = this.width / this.scaleX;
     const frameHeight = this.height / this.scaleY;
 
-    const { widthPercent, heightPercent, offsetXPercent, offsetYPercent } =
-      config;
+    const { widthPercent, heightPercent, offsetXPercent, offsetYPercent } = config;
 
     const bodyWidth = frameWidth * widthPercent * this.scaleX;
     const bodyHeight = frameHeight * heightPercent * this.scaleY;

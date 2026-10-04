@@ -18,9 +18,7 @@ export class HealthBar extends Phaser.GameObjects.Container {
     const background = scene.add
       .rectangle((width / 2) * -1, -15, width, height, 0x555555)
       .setOrigin(0, 0);
-    this.bar = scene.add
-      .rectangle((width / 2) * -1, -15, width, height, 0x00ff00)
-      .setOrigin(0, 0);
+    this.bar = scene.add.rectangle((width / 2) * -1, -15, width, height, 0x00ff00).setOrigin(0, 0);
 
     background.setVisible(this.show);
     this.bar.setVisible(this.show);

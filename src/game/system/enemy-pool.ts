@@ -14,10 +14,10 @@
  * This dramatically improves performance for 1000+ enemies
  */
 
+import type { ENEMY } from '@constants';
 import type { Enemy } from '@entities/enemies/enemy';
 import { EnemyFactory } from '@entities/enemies/enemy-factory';
 import type { GameScene } from '@scenes/game-scene';
-import type { ENEMY } from '@constants';
 
 export interface PoolConfig {
   initialSize: number;
@@ -52,9 +52,7 @@ export class EnemyPool {
     // Initialize the pool by pre-creating enemies
     this.initializePool();
 
-    console.log(
-      `🎮 Enemy Pool initialized: ${this.allEnemies.length} enemies pre-created`
-    );
+    console.log(`🎮 Enemy Pool initialized: ${this.allEnemies.length} enemies pre-created`);
   }
 
   /**
@@ -64,17 +62,10 @@ export class EnemyPool {
     for (let i = 0; i < this.poolConfig.initialSize; i++) {
       // Randomly distribute among enemy types
       const randomType =
-        this.poolConfig.enemyTypes[
-          Math.floor(Math.random() * this.poolConfig.enemyTypes.length)
-        ];
+        this.poolConfig.enemyTypes[Math.floor(Math.random() * this.poolConfig.enemyTypes.length)];
 
       // Create enemy at dummy position (0, 0) - will be moved when activated
-      const enemy = EnemyFactory.createEnemyByType(
-        this.scene,
-        0,
-        0,
-        randomType
-      );
+      const enemy = EnemyFactory.createEnemyByType(this.scene, 0, 0, randomType);
 
       // Start as inactive
       enemy.startInactive();
@@ -101,18 +92,15 @@ export class EnemyPool {
       enemy = this.availableEnemies.splice(matchIdx, 1)[0];
       enemy.restore(x, y);
     } else if (this.allEnemies.length < this.poolConfig.maxSize) {
-      const type = preferredType ??
-        this.poolConfig.enemyTypes[
-          Math.floor(Math.random() * this.poolConfig.enemyTypes.length)
-        ];
+      const type =
+        preferredType ??
+        this.poolConfig.enemyTypes[Math.floor(Math.random() * this.poolConfig.enemyTypes.length)];
 
       enemy = EnemyFactory.createEnemyByType(this.scene, x, y, type);
       this.allEnemies.push(enemy);
       this.enemiesGroup.add(enemy);
 
-      console.warn(
-        `⚠️ Pool expanded! Now at ${this.allEnemies.length}/${this.poolConfig.maxSize}`
-      );
+      console.warn(`⚠️ Pool expanded! Now at ${this.allEnemies.length}/${this.poolConfig.maxSize}`);
     } else {
       return null;
     }
@@ -189,10 +177,7 @@ export class EnemyPool {
       total: this.allEnemies.length,
       active: this.activeEnemies.size,
       available: this.availableEnemies.length,
-      utilization: `${(
-        (this.activeEnemies.size / this.allEnemies.length) *
-        100
-      ).toFixed(1)}%`,
+      utilization: `${((this.activeEnemies.size / this.allEnemies.length) * 100).toFixed(1)}%`,
     };
   }
 
