@@ -82,6 +82,15 @@ export class EnemyManager {
   }
 
   /**
+   * Spawn several enemies at once (dev tools)
+   */
+  spawnBurst(count: number): void {
+    for (let i = 0; i < count; i++) {
+      this.spawnEnemy();
+    }
+  }
+
+  /**
    * Weighted enemy type selection based on elapsed time.
    * Min 0-1: 100% slimes
    * Min 1-3: skeletons start appearing (~10%)

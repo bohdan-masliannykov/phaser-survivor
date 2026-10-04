@@ -10,6 +10,7 @@ import { Landscape } from '@entities/environment/landscape';
 import type { Player } from '@entities/player/player';
 import { PlayerFactory } from '@entities/player/player-factory';
 import { getNearestEnemy } from '@entities/utils/pathfinding';
+import { DevTools } from '@system/dev-tools';
 import { InputSystem } from '@system/input-system';
 import { ProgressionSystem } from '@system/progression-system';
 import { XpGemPool } from '@system/xp-gem-pool';
@@ -76,6 +77,8 @@ export class GameScene extends Phaser.Scene {
     this.hud = new GameHud(this);
     this.upgradePicker = new UpgradePicker(this);
     this.gameOverScreen = new GameOverScreen(this);
+
+    if (import.meta.env.DEV) new DevTools(this);
 
     // Pause on ESC
     this.input.keyboard!.on('keydown-ESC', () => {

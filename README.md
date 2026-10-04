@@ -16,6 +16,21 @@ pnpm dev
 
 Weapons fire on their own at the nearest enemy.
 
+## Dev tools
+
+Available under `pnpm dev` only; they are stripped from production builds.
+
+| Key | Action |
+| --- | --- |
+| `L` | Level up |
+| `T` | Skip one minute |
+| `N` | Spawn 50 enemies |
+| `K` | Kill all enemies |
+| `G` | Toggle god mode |
+| `P` | Toggle hitboxes |
+
+URL parameters: `?char=archer` skips character selection, `?t=300` starts the run at 300 seconds.
+
 ## Scripts
 
 | Script | What it does |
