@@ -1,5 +1,6 @@
 import { ENEMY, PLAYER } from '@constants';
 import { generateTerrainTextures } from '@entities/environment/terrain-textures';
+import { getDevCharacter } from '@system/dev-tools';
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -93,6 +94,12 @@ export class PreloadScene extends Phaser.Scene {
         });
       });
     });
+
+    const devCharacter = getDevCharacter();
+    if (devCharacter) {
+      this.scene.start('GameScene', { characterType: devCharacter });
+      return;
+    }
 
     this.scene.start('CharacterSelectionScene');
   }
