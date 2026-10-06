@@ -78,7 +78,8 @@ export class EnemyManager {
 
     // Roll enemy type based on elapsed time
     const type = this.rollEnemyType();
-    return this.enemyPool.acquire(x, y, type);
+    const { hpMultiplier, speedMultiplier } = this.scene.progression;
+    return this.enemyPool.acquire(x, y, type, { hpMultiplier, speedMultiplier });
   }
 
   /**

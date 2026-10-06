@@ -26,6 +26,11 @@ export interface PoolConfig {
   onEnemyDeath?: (x: number, y: number, enemyType: string) => void;
 }
 
+export interface EnemyScaling {
+  hpMultiplier: number;
+  speedMultiplier: number;
+}
+
 export class EnemyPool {
   private scene: GameScene;
   private poolConfig: PoolConfig;
@@ -81,7 +86,12 @@ export class EnemyPool {
    * Get an enemy from the pool and activate it at a specific position
    * Returns null if pool is exhausted
    */
-  public acquire(x: number, y: number, preferredType?: keyof typeof ENEMY): Enemy | null {
+  public acquire(
+    x: number,
+    y: number,
+    preferredType?: keyof typeof ENEMY,
+    scaling?: EnemyScaling
+  ): Enemy | null {
     let enemy: Enemy;
 
     // Find a matching type in the pool, or fall back to any available
@@ -91,7 +101,6 @@ export class EnemyPool {
 
     if (matchIdx >= 0) {
       enemy = this.availableEnemies.splice(matchIdx, 1)[0];
-      enemy.restore(x, y);
     } else if (this.allEnemies.length < this.poolConfig.maxSize) {
       const type =
         preferredType ??
@@ -106,6 +115,7 @@ export class EnemyPool {
       return null;
     }
 
+    enemy.restore(x, y, scaling?.hpMultiplier, scaling?.speedMultiplier);
     this.activeEnemies.add(enemy);
     this.activeCacheDirty = true;
     enemy.onDying = () => {

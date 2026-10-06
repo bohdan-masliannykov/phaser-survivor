@@ -7,6 +7,7 @@ export abstract class Enemy extends GameObject {
   onDying?: () => void;
   /** Fired when the death animation has finished. */
   onDeath?: () => void;
+  private readonly baseMaxHealth: number;
 
   constructor(
     scene: Phaser.Scene,
@@ -21,6 +22,7 @@ export abstract class Enemy extends GameObject {
 
     super(scene, x, y, texture, ENEMY_SPEED, rndScale, healthOptions, animations);
 
+    this.baseMaxHealth = this.maxHealth;
     this.hitboxConfig = hitboxConfig;
     this.updateBodyForScale(false, hitboxConfig);
     this.playDefaultAnimation();
@@ -133,7 +135,10 @@ export abstract class Enemy extends GameObject {
     });
   }
 
-  restore(x: number, y: number): void {
+  restore(x: number, y: number, hpMultiplier: number = 1, speedMultiplier: number = 1): void {
+    this.maxHealth = Math.round(this.baseMaxHealth * hpMultiplier);
+    this.speed = ENEMY_SPEED * speedMultiplier;
+
     this.setPosition(x, y);
     this.setVelocity(0, 0);
     this.setBodyEnabled(true);
