@@ -1,13 +1,8 @@
-export const MIN_VELOCITY_THRESHOLD = 0.001;
 export const PLAYER_SPEED = 150; // pixels per second
 export const ENEMY_SPEED = 50; // pixels per second
-export const ARRIVE_RADIUS = 6; // pixels
-export const SPRITE_SCALE = 2.5; // scaling factor for sprites
 export const ENEMY_SPAWN_INTERVAL_MS = 600; // milliseconds
 export const SPAWN_MARGIN = 40; // pixels outside of view
 
-export const PROJECTILE_SPEED = 450; // pixels per second
-export const PROJECTILE_LIFETIME_MS = 900; // despawn after this time
 export const PROJECTILE_HIT_RADIUS = 14; // simple distance-based collision
 export const AUTO_FIRE_RANGE = 400; // weapon engagement range
 
@@ -17,7 +12,7 @@ export const AUTO_FIRE_RANGE = 400; // weapon engagement range
  * @param framesInRow - Number of frames in the current row
  * @param rowIndex - The row number (0-based)
  */
-export function getRowFrameRange(columnsPerRow: number, framesInRow: number, rowIndex: number) {
+function getRowFrameRange(columnsPerRow: number, framesInRow: number, rowIndex: number) {
   const start = rowIndex * columnsPerRow;
   const end = start + framesInRow - 1;
   return { start, end };
@@ -27,20 +22,9 @@ export function getRowFrameRange(columnsPerRow: number, framesInRow: number, row
 export const XP_GEM_PICKUP_RADIUS = 80; // magnetic pull starts
 export const XP_GEM_COLLECT_RADIUS = 25; // instant pickup
 export const XP_GEM_MAGNETIC_SPEED = 350; // px/s when being pulled
-export const XP_PER_ENEMY: Record<string, number> = {
-  slime: 1,
-  orc: 3,
-  skeleton: 2,
-};
 export const XP_THRESHOLDS = [
   3, 6, 12, 20, 35, 55, 80, 110, 150, 200, 260, 330, 400, 470, 550, 640, 740, 850, 970, 1100,
 ]; // XP needed to reach level 2, 3, 4, ...
-
-// Difficulty scaling
-export const DIFFICULTY_INTERVAL_MS = 30_000; // check every 30s for smoother curve
-export const DIFFICULTY_HP_MULT = 0.08; // +8% HP per interval
-export const DIFFICULTY_SPEED_MULT = 0.025; // +2.5% speed per interval
-export const DIFFICULTY_SPAWN_MULT = 0.92; // spawn delay *0.92 per interval
 
 // Player damage from enemies
 export const ENEMY_CONTACT_DAMAGE = 5;
