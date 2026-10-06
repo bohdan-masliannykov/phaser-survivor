@@ -49,9 +49,9 @@ export class ProgressionSystem {
     this.difficultyTier = Math.floor(minutes);
 
     // Exponential curve: gentle first 5 min, steep after 10 min
-    this.hpMultiplier = 1 + Math.pow(minutes / 5, 2) * 0.5;
-    this.speedMultiplier = 1 + Math.pow(minutes / 10, 1.5) * 0.25;
-    this.spawnDelayMultiplier = Math.max(0.1, 1 - Math.pow(minutes / 18, 2));
+    this.hpMultiplier = 1 + (minutes / 5) ** 2 * 0.5;
+    this.speedMultiplier = 1 + (minutes / 10) ** 1.5 * 0.25;
+    this.spawnDelayMultiplier = Math.max(0.1, 1 - (minutes / 18) ** 2);
   }
 
   getElapsedFormatted(): string {

@@ -7,7 +7,7 @@ import {
 } from '@constants';
 import { EnemyManager } from '@entities/enemies/enemy-manager';
 import { Landscape } from '@entities/environment/landscape';
-import { Player } from '@entities/player/player';
+import type { Player } from '@entities/player/player';
 import { PlayerFactory } from '@entities/player/player-factory';
 import { getNearestEnemy } from '@entities/utils/pathfinding';
 import { InputSystem } from '@system/input-system';

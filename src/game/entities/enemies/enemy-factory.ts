@@ -9,7 +9,7 @@ export class EnemyFactory {
     const enemyTypes = Object.keys(ENEMY) as (keyof typeof ENEMY)[];
     const randomType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
 
-    return this.createEnemyByType(scene, x, y, randomType);
+    return EnemyFactory.createEnemyByType(scene, x, y, randomType);
   }
 
   static createEnemyByType(
