@@ -32,6 +32,7 @@ export class GameScene extends Phaser.Scene {
   private paused = false;
   private gameOver = false;
   private lastContactDamageTime = 0;
+  private pendingLevelUps = 0;
   private pauseOverlay: Phaser.GameObjects.GameObject[] = [];
 
   constructor() {
@@ -42,6 +43,7 @@ export class GameScene extends Phaser.Scene {
     this.paused = false;
     this.gameOver = false;
     this.lastContactDamageTime = 0;
+    this.pendingLevelUps = 0;
 
     this.player = PlayerFactory.createPlayer(
       this,
@@ -207,10 +209,23 @@ export class GameScene extends Phaser.Scene {
   }
 
   private onLevelUp(): void {
+    this.pendingLevelUps++;
+    if (this.upgradePicker.isVisible()) return;
+
     this.paused = true;
     this.physics.pause();
     this.enemyManager.pauseSpawning();
+    this.showNextUpgrade();
+  }
+
+  /** Shows one picker per pending level, then resumes the game. */
+  private showNextUpgrade(): void {
     this.upgradePicker.show(this.player, () => {
+      this.pendingLevelUps--;
+      if (this.pendingLevelUps > 0) {
+        this.showNextUpgrade();
+        return;
+      }
       this.paused = false;
       this.physics.resume();
       this.enemyManager.resumeSpawning();

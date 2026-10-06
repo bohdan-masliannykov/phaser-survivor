@@ -21,9 +21,9 @@ export class ProgressionSystem {
 
   addXp(amount: number): void {
     this.xp += amount;
-    const threshold = this.getXpThreshold();
-    if (this.xp >= threshold) {
-      this.xp -= threshold;
+    // One pickup can be worth several levels
+    while (this.xp >= this.getXpThreshold()) {
+      this.xp -= this.getXpThreshold();
       this.level++;
       this.onLevelUp?.();
     }
