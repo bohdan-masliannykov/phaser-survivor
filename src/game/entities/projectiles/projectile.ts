@@ -1,4 +1,5 @@
 import type { HitboxConfig } from '@entities/core/game-object';
+import { gameClock } from '@system/game-clock';
 
 export class Projectile extends Phaser.Physics.Arcade.Sprite {
   private direction: { x: number; y: number };
@@ -22,14 +23,14 @@ export class Projectile extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
 
     this.speed = speed;
-    this.birthTime = scene.time.now;
+    this.birthTime = gameClock.now;
     this.lifetimeMs = lifetimeMs;
     this.direction = direction;
     this.move();
   }
 
   isExpired(): boolean {
-    return this.scene.time.now - this.birthTime >= this.lifetimeMs;
+    return gameClock.now - this.birthTime >= this.lifetimeMs;
   }
 
   move() {
