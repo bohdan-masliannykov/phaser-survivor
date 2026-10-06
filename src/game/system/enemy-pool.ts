@@ -38,6 +38,9 @@ export class EnemyPool {
 
   // Currently active enemies in the game
   private activeEnemies: Set<Enemy> = new Set();
+
+  // Enemies playing their death animation: no longer in play, not yet reusable
+  private dyingEnemies: Set<Enemy> = new Set();
   private activeCache: Enemy[] = [];
   private activeCacheDirty: boolean = false;
 
@@ -105,6 +108,11 @@ export class EnemyPool {
 
     this.activeEnemies.add(enemy);
     this.activeCacheDirty = true;
+    enemy.onDying = () => {
+      this.activeEnemies.delete(enemy);
+      this.dyingEnemies.add(enemy);
+      this.activeCacheDirty = true;
+    };
     enemy.onDeath = () => {
       this.poolConfig.onEnemyDeath?.(enemy.x, enemy.y, enemy.texture.key);
       this.release(enemy);
@@ -116,11 +124,12 @@ export class EnemyPool {
    * Return an enemy to the pool (when it dies or leaves the map)
    */
   public release(enemy: Enemy): void {
-    if (!this.activeEnemies.has(enemy)) {
+    const wasActive = this.activeEnemies.delete(enemy);
+    const wasDying = this.dyingEnemies.delete(enemy);
+    if (!wasActive && !wasDying) {
       return; // Already released
     }
 
-    this.activeEnemies.delete(enemy);
     this.activeCacheDirty = true;
 
     enemy.deactivate();
@@ -130,7 +139,7 @@ export class EnemyPool {
   }
 
   /**
-   * Get all currently active enemies
+   * Get all living enemies (excludes those playing their death animation)
    */
   public getActive(): Enemy[] {
     if (this.activeCacheDirty) {
@@ -152,6 +161,7 @@ export class EnemyPool {
    */
   public destroy(): void {
     this.activeEnemies.clear();
+    this.dyingEnemies.clear();
     this.activeCache.length = 0;
     this.activeCacheDirty = false;
     this.availableEnemies.length = 0;
