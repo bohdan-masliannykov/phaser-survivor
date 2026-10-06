@@ -1,6 +1,6 @@
 import { PLAYER } from '@constants';
-import { Player } from './player';
 import { Bow } from '@entities/weapons/bow';
+import { Player } from './player';
 
 export class Archer extends Player {
   constructor(scene: Phaser.Scene, x: number, y: number) {

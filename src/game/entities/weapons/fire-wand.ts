@@ -1,8 +1,8 @@
+import { AUTO_FIRE_RANGE, PROJECTILE_HIT_RADIUS } from '@constants';
 import type { Enemy } from '@entities/enemies/enemy';
-import { Weapon } from './weapon';
-import { Fireball } from '@entities/projectiles/fireball';
 import type { Player } from '@entities/player/player';
-import { PROJECTILE_HIT_RADIUS, AUTO_FIRE_RANGE } from '@constants';
+import { Fireball } from '@entities/projectiles/fireball';
+import { Weapon } from './weapon';
 
 interface FireWandStats {
   minDamage: number;

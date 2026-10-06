@@ -1,8 +1,8 @@
-import type { Enemy } from '@entities/enemies/enemy';
-import { Weapon } from './weapon';
-import { Arrow } from '@entities/projectiles/arrow';
-import type { Player } from '@entities/player/player';
 import { PROJECTILE_HIT_RADIUS } from '@constants';
+import type { Enemy } from '@entities/enemies/enemy';
+import type { Player } from '@entities/player/player';
+import { Arrow } from '@entities/projectiles/arrow';
+import { Weapon } from './weapon';
 
 interface BowStats {
   minDamage: number;
@@ -61,15 +61,8 @@ export class Bow extends Weapon {
       // Spread shot
       const minSpread = Phaser.Math.DegToRad(15);
       const maxSpread = Phaser.Math.DegToRad(35);
-      const totalSpread = Phaser.Math.Linear(
-        minSpread,
-        maxSpread,
-        (numProjectiles - 1) / (5 - 1)
-      );
-      const baseAngle = Math.atan2(
-        nearestEnemy.y - player.y,
-        nearestEnemy.x - player.x
-      );
+      const totalSpread = Phaser.Math.Linear(minSpread, maxSpread, (numProjectiles - 1) / (5 - 1));
+      const baseAngle = Math.atan2(nearestEnemy.y - player.y, nearestEnemy.x - player.x);
       const startAngle = baseAngle - totalSpread / 2;
       const angleStep = totalSpread / (numProjectiles - 1);
 

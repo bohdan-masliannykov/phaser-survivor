@@ -1,5 +1,5 @@
-import type { ProgressionSystem } from '@system/progression-system';
 import type { Player } from '@entities/player/player';
+import type { ProgressionSystem } from '@system/progression-system';
 
 const TEXT_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
   fontFamily: 'monospace',
